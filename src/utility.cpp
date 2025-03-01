@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "utility.h"
 
 int utility::gcd(int a, int b) {
