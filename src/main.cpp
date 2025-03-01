@@ -1,11 +1,22 @@
 #include <iostream>
 
-#include "utility.h"
+#include "cli.h"
 
-int main() {
-     utility util;
+int main(int argc, char* argv[]) {
 
-     std::cout << util.checkForPrime(54557) << std::endl;
-     std::cout << util.checkForPrime(29) << std::endl;
+     // check if there are additional arguments
+     if (argc > 1) {
+          std::string feature = argv[1];
+          if (feature == "create") {
+               cli::create();
+          } else if (feature == "help") {
+               cli::help();
+          } else {
+               cli::help();
+          }
+     } else {
+          cli::help();
+     }
+
      return 0;
 }
