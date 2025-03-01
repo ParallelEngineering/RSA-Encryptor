@@ -29,7 +29,7 @@ bool utility::checkForPrime(int number)
             }
         }
 
-        // Ff counter is greater than 0 then n is prime
+        // If counter is greater than 0 then n is prime
         if (counter > 0) {
             return false;
         }
