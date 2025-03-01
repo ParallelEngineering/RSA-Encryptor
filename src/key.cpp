@@ -2,14 +2,14 @@
 #include "key.h"
 
 
-void createRSAKey() {
+void key::createRSAKey() {
 
 }
 
-unsigned long int getPrivateKey(std::string& name) {
+unsigned long int key::getPrivateKey(std::string& name) {
     return 230'948'093'874;
 }
 
-unsigned long int getPublicKey(std::string& name) {
+unsigned long int key::getPublicKey(std::string& name) {
     return 532'098'453'234;
 }
