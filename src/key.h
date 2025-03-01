@@ -1,5 +1,8 @@
 #include <iostream>
 
+#define KEY_FOLDER "rsa-keys"
+
+
 class key {
 
 public:
