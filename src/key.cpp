@@ -1,15 +1,18 @@
-#include <array>
+#include <filesystem>
 #include "key.h"
 
 
 void key::createRSAKey() {
+    std::string keyName;
 
+    std::cout << "What should the key be called?" << std::endl;
+    std::cin >> keyName;
 }
 
-unsigned long int key::getPrivateKey(std::string& name) {
-    return 230'948'093'874;
+std::pair<unsigned long int, unsigned long int> getPrivateKey(std::string& name) {
+    return {647'090'566'899, 234'099'456'876'004};
 }
 
-unsigned long int key::getPublicKey(std::string& name) {
-    return 532'098'453'234;
+std::pair<unsigned long int, unsigned long int> getPublicKey(std::string& name) {
+    return {143'548'453'234, 234'099'456'876'004};
 }

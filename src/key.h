@@ -4,6 +4,7 @@ class key {
 
 public:
     void createRSAKey();
-    unsigned long int getPrivateKey(std::string& name);
-    unsigned long int getPublicKey(std::string& name);
+
+    std::pair<unsigned long int, unsigned long int> getPrivateKey(std::string& name);
+    std::pair<unsigned long int, unsigned long int> getPublicKey(std::string& name);
 };
