@@ -6,5 +6,6 @@ private:
 
 public:
     int gcd(int a, int b);
+    int phi(int a, int b);
 };
 
