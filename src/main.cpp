@@ -1,7 +1,11 @@
+#include <iostream>
+
 #include "utility.h"
 
 int main() {
      utility util;
-     std::cout << util.gcd(12, 4) << std::endl;
-     return 1;
+
+     std::cout << util.checkForPrime(54557) << std::endl;
+     std::cout << util.checkForPrime(29) << std::endl;
+     return 0;
 }
