@@ -1,8 +1,7 @@
-#include <iostream>
-
-using std::cout, std::endl;
+#include "utility.h"
 
 int main() {
-     cout << "Hello, World" << endl;
+     utility util;
+     std::cout << util.gcd(12, 4) << std::endl;
      return 1;
 }
