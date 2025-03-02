@@ -1,8 +1,8 @@
 #include <filesystem>
-#include "key.h"
+#include "keys.h"
 
 
-void key::createRSAKey() {
+void keys::createRSAKey() {
     std::string keyName;
 
     std::cout << "What should the key be called? ";

@@ -3,10 +3,10 @@
 #define KEY_FOLDER "rsa-keys"
 
 
-class key {
+class keys {
 
 public:
-    void createRSAKey();
+    static void createRSAKey();
 
     std::pair<unsigned long int, unsigned long int> getPrivateKey(std::string& name);
     std::pair<unsigned long int, unsigned long int> getPublicKey(std::string& name);
