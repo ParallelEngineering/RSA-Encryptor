@@ -2,21 +2,62 @@
 #include "key.h"
 
 
+std::filesystem::path key::keysPath() {
+    // Navigate to the root directory of the project
+    std::filesystem::path programRootPath = std::filesystem::current_path().parent_path();
+    std::filesystem::path keysFolder = programRootPath / KEY_FOLDER;
+    return keysFolder;
+}
+
+int key::keyExists(std::string name) {
+    /* 0: key doesn't exist
+     * 1: only publicKey exists
+     * 2: only privateKey exists
+     * 3: both keys exists */
+    int status = NONE;
+
+    std::filesystem::path keysFolder = keysPath();
+
+    // go over every file in the KEY_FOLDER
+    for (const auto& entry : std::filesystem::directory_iterator(keysFolder)) {
+        // check if the name matches
+        if (entry.path().stem() == name) {
+            // check if it's a public key
+            if (entry.path().extension() == ".pub") {
+                // break the loop if both files are found
+                if (status == NONE) status = PUBLIC; else {status = BOTH; break;};
+            }
+            // check if it's a private key
+            else if (entry.path().has_extension() == false) {
+                if (status == NONE) status = PRIVATE; else {status = BOTH; break;};
+            }
+        }
+    }
+
+    return status;
+}
+
 void key::createRSAKey() {
     std::string keyName;
 
     std::cout << "What should the key be called? ";
     std::cin >> keyName;
 
-    // Navigate to the root directory of the project
-    std::filesystem::path programRootPath = std::filesystem::current_path().parent_path();
-    std::filesystem::path keysFolder = programRootPath / KEY_FOLDER;
+    std::filesystem::path keysFolder = keysPath();
 
     // check if keys folder exists
     if (!std::filesystem::exists(keysFolder)) {
         // Create the "RSA-Keys" directory in the root folder fo the program
         std::filesystem::create_directory(keysFolder);
     }
+
+    // check if a key with this name already exits
+    if (keyExists(keyName) != NONE) {
+        std::cout << "This key already exits, try a different name!" << std::endl;
+        return;
+    }
+
+
 
     std::cout << "You can find your newly created key here: " << keysFolder << std::endl;
 
