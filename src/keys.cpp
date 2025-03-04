@@ -5,22 +5,20 @@
 void keys::createRSAKey() {
     std::string keyName;
 
-    std::cout << "What should the key be called? ";
+    std::cout << "Enter the name of the key: ";
     std::cin >> keyName;
 
     // Navigate to the root directory of the project
     std::filesystem::path programRootPath = std::filesystem::current_path().parent_path();
     std::filesystem::path keysFolder = programRootPath / KEY_FOLDER;
 
-    // check if keys folder exists
+    // Check if keys folder exists
     if (!std::filesystem::exists(keysFolder)) {
         // Create the "RSA-Keys" directory in the root folder fo the program
         std::filesystem::create_directory(keysFolder);
     }
 
     std::cout << "You can find your newly created key here: " << keysFolder << std::endl;
-
-
 }
 
 std::pair<unsigned long int, unsigned long int> getPrivateKey(std::string& name) {

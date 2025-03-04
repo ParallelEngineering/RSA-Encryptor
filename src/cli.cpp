@@ -14,5 +14,5 @@ void cli::key::create() {
 void cli::key::list() {
 }
 
-void cli::key::print(std::string name, bool publicKey, bool privateKey) {
+void cli::key::print(const std::string& name, bool publicKey, bool privateKey) {
 }

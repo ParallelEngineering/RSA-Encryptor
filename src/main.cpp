@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstring>
 
 #include "cli.h"
 
@@ -9,17 +10,23 @@ int main(int argc, char* argv[]) {
           bool publicKey = false;
      } arguments;
 
-     // check if there are additional arguments
+     // Check if there are additional arguments
      if (argc > 1) {
 
-          // check for additional arguments
-          for (int i = 1; i >= argc; i++) {
-               if (strcmp(argv[i], "-p") == 0 || strcmp(argv[i], "--public") == 0) {
+          // Check for additional arguments
+          for (int i = 1; argc > i; i++) {
+               // Check for a public key
+               if (!strcmp(argv[i], "-p") || !strcmp(argv[i], "--public")) {
                     arguments.publicKey = true;
-               } else if (strcmp(argv[i], "-P") == 0 || strcmp(argv[i], "--private") == 0) {
+               }
+               
+               // Check for a private key
+               if (!strcmp(argv[i], "-P") || !strcmp(argv[i], "--private")) {
                     arguments.privateKey = true;
                }
           }
+
+          std::cout << arguments.publicKey << std::endl;
 
           std::string feature = argv[1];
 
