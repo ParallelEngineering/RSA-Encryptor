@@ -1,7 +1,10 @@
 #include <iostream>
-#include <cstring>
+#include <vector>
+#include <cstdint>
+#include <algorithm>
 
-#include "cli.h"
+#include "utility.h"
+#include "vec/operations.h"
 
 int main(int argc, char* argv[]) {
 
@@ -50,5 +53,17 @@ int main(int argc, char* argv[]) {
           cli::help();
      }
 
+     // std::cout << util.checkForPrime(54557) << std::endl;
+     // std::cout << util.checkForPrime(29) << std::endl;
+     std::vector<uint8_t> num1 = {255, 255, 255}; // 16777215 in dezimal
+     std::vector<uint8_t> num2 = {0x01};          // Add one
+
+     std::vector<uint8_t> result = add(num1, num2);
+
+     // This gives out the result as a hex number
+     for (auto it = result.rbegin(); it != result.rend(); ++it) {
+          printf("%02X", *it);
+     }
+     std::cout << std::endl;
      return 0;
 }
