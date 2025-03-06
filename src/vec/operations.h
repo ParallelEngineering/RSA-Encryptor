@@ -33,7 +33,7 @@ std::vector<uint8_t> add(const std::vector<uint8_t>& a, const std::vector<uint8_
         carry = sum >> 8;
 
         // Clear out everything except the lsb
-        // This is done by masking the sume with 255
+        // This is done by masking the sum with 255
         // For example
         // 0000000101111111 (=383)
         // 0000000011111111 (=255)
@@ -52,4 +52,8 @@ std::vector<uint8_t> add(const std::vector<uint8_t>& a, const std::vector<uint8_
     }
 
     return result;
+}
+
+std::vector<uint8_t> mul(const std::vector<uint8_t>& a, const std::vector<uint8_t>& b) {
+
 }
