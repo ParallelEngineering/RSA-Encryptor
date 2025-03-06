@@ -2,7 +2,7 @@
 #include <vector>
 #include <cstdint>
 
-std::vector<uint8_t> add(const std::vector<uint8_t>& a, const std::vector<uint8_t>& b) {
+[[nodiscard]] std::vector<uint8_t> add(const std::vector<uint8_t>& a, const std::vector<uint8_t>& b) {
     // Initialize the result vector to store the sum
     std::vector<uint8_t> result;
 
@@ -54,6 +54,23 @@ std::vector<uint8_t> add(const std::vector<uint8_t>& a, const std::vector<uint8_
     return result;
 }
 
-std::vector<uint8_t> mul(const std::vector<uint8_t>& a, const std::vector<uint8_t>& b) {
+[[nodiscard]] std::vector<uint8_t> convertToVector(std::uint64_t number) {
+    
+    std::vector<uint8_t> result;
 
+    // Loop until the whole number is zero
+    while (number) {
+        // We only care for the lsb
+        result.push_back(static_cast<uint8_t>(number & 0xFF));
+
+        // Shift the number by 8 to the right
+        number >>= 8;
+    }
+
+    return result;
+}
+
+[[nodiscard]] std::vector<uint8_t> mul(const std::vector<uint8_t>& a, const std::vector<uint8_t>& b) {
+    std::vector<std::uint8_t> result;
+    return result;
 }
