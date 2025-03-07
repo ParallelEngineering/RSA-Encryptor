@@ -1,7 +1,7 @@
 add_executable(RSA-Encryptor
         main.cpp
         utility.cpp
-        keys.cpp
+        key.cpp
         encryption.cpp
         cli.cpp
 )
