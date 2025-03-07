@@ -2,8 +2,10 @@
 #include <vector>
 #include <cstdint>
 #include <algorithm>
+#include <cstring>
 
 #include "utility.h"
+#include "cli.h"
 #include "vec/operations.h"
 
 int main(int argc, char* argv[]) {
