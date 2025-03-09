@@ -12,6 +12,7 @@ std::filesystem::path key::keysPath() {
 }
 
 int key::keyExists(std::string name) {
+    // TODO fix function not case sensitive
     /* 0: key doesn't exist
      * 1: only publicKey exists
      * 2: only privateKey exists
@@ -39,16 +40,21 @@ int key::keyExists(std::string name) {
     return status;
 }
 
-int key::writeKey(const std::string& name, const unsigned long int data, const bool isPublic) {
+int key::writeKey(const std::string& name, std::vector<uint8_t> data, const bool isPublic) {
     std::filesystem::path keysFolder = keysPath();
 
     std::filesystem::path keyFile = keysFolder / (name + (isPublic? ".pub":""));
+    // load file in memory
     std::ofstream outFile(keyFile);
 
+    // key in base64 format
+    std::string base64Data = base64Encode(data);
+
     if (outFile.is_open()) {
-        std::string dataStr = std::to_string(data);
         outFile << "-----BEGIN RSA " << (isPublic? "PUBLIC":"PRIVATE") << " KEY-----\n";
-        outFile << base64_encode(dataStr) << "\n";
+        for (int i = 0; i < base64Data.size(); i += 64) {
+            outFile << base64Data.substr(i, 64) << "\n";
+        }
         outFile << "-----END RSA " << (isPublic? "PUBLIC":"PRIVATE") << " KEY-----\n";
         outFile.close();
     } else {
@@ -59,9 +65,43 @@ int key::writeKey(const std::string& name, const unsigned long int data, const b
     return 1;
 }
 
-std::string key::base64_encode(std::string &data) {
-    //TODO Add base 64 encode function
-    return data;
+std::string key::base64Encode(std::vector<uint8_t> data) {
+
+    const unsigned int charCount = data.size() * 1.5;
+    char* result = new char[charCount];
+    unsigned int resultIndex = charCount - 1;
+
+    while (!data.empty()) {
+
+        uint32_t dataSegment = 0;
+
+        // pop 3 numbers from the data vector and store it as one block in dataSegment
+        for (int i = 0; i < 3; i++) {
+            if (data.size() < 1) break;
+            uint8_t number = data.back();
+            data.pop_back();
+            dataSegment += number << i * 8;
+        }
+
+        // 4 times, put 6 bits from dataSegment into result array
+        for (int j = 0; j < 4; j++) {
+            if (resultIndex < 1) break;
+            result[resultIndex--] = static_cast<uint8_t>(dataSegment & 0b00111111);
+            dataSegment >>= 6;
+        }
+    }
+
+    std::string outString;
+
+    // convert the numeric value to the corresponding char of the base64 charset
+    for (char& c : std::string(result, charCount)) {
+        outString += base64Chars[c];
+    }
+
+    // free memory space
+    delete[] result;
+
+    return outString;
 }
 
 void key::createRSAKey() {
@@ -84,7 +124,7 @@ void key::createRSAKey() {
         return;
     }
 
-    if (writeKey(keyName, 0, true) == 1 && writeKey(keyName, 0, false) == 1) {
+    if (writeKey(keyName, {0}, true) == 1 && writeKey(keyName, {0}, false) == 1) {
         std::cout << keyName + " key successfully created!\n";
         std::cout << "You can find your newly created key here: " << keysFolder << std::endl;
     } else {
