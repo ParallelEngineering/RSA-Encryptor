@@ -40,7 +40,9 @@ int key::keyExists(std::string name) {
     return status;
 }
 
-int key::writeKey(const std::string& name, std::vector<uint8_t> data, const bool isPublic) {
+int key::writeKey(const std::string& name, std::vector<uint8_t> *data, const bool isPublic) {
+    if (data == nullptr) return -1;
+
     std::filesystem::path keysFolder = keysPath();
 
     std::filesystem::path keyFile = keysFolder / (name + (isPublic? ".pub":""));
@@ -48,7 +50,7 @@ int key::writeKey(const std::string& name, std::vector<uint8_t> data, const bool
     std::ofstream outFile(keyFile);
 
     // key in base64 format
-    std::string base64Data = base64Encode(data);
+    std::string base64Data = base64Encode(*data);
 
     if (outFile.is_open()) {
         outFile << "-----BEGIN RSA " << (isPublic? "PUBLIC":"PRIVATE") << " KEY-----\n";
@@ -59,8 +61,44 @@ int key::writeKey(const std::string& name, std::vector<uint8_t> data, const bool
         outFile.close();
     } else {
         std::cerr << "Could not write to file: " << keyFile << std::endl;
-        return 0;
+        return -1;
     }
+
+    return 1;
+}
+
+int key::readKey(const std::string &name, std::vector<uint8_t> *data, bool isPublic) {
+    std::filesystem::path keysFolder = keysPath();
+
+    std::filesystem::path keyFile = keysFolder / (name + (isPublic? ".pub":""));
+    // load file in memory
+    std::ifstream inFile(keyFile);
+
+    // check if file is loaded correctly
+    if (!inFile.is_open()) {
+        std::cerr << "Die Datei konnte nicht geladen werden!" << std::endl;
+        return -1;
+    }
+
+    std::string currentLine;
+    std::string keyString;
+
+    while (getline (inFile, currentLine)) {
+
+        if (currentLine.empty()) continue;
+        if (currentLine.at(0) == '-') continue;
+
+        keyString += currentLine;
+    }
+
+    // remove any line breaks
+    for (int c = keyString.length() - 1; c >= 0; c--) {
+        if (keyString.at(c) == '\n') {
+            keyString.erase(c);
+        }
+    }
+
+    *data = base64Decode(keyString);
 
     return 1;
 }
@@ -124,7 +162,7 @@ std::vector<uint8_t> key::base64Decode(std::string data) {
 
             // check for valid char code
             if (number > 0b111111) {
-                std::cerr << "trying to Decode not falis char: " << letterSegment.at(i) << std::endl;
+                std::cerr << "trying to Decode not valid char: " << letterSegment.at(i) << std::endl;
                 continue;
             }
             dataSegment += number << i * 6;
@@ -148,6 +186,28 @@ uint8_t key::getBase64Index(char letter) {
     return 0;
 }
 
+int key::createKey(std::vector<uint8_t> *keyPublic, std::vector<uint8_t> *keyPrivate) {
+    *keyPublic = {
+        23, 87, 45, 190, 12, 78, 34, 210, 56, 89,
+        123, 67, 90, 150, 32, 76, 54, 200, 11, 99,
+        101, 145, 67, 189, 43, 88, 29, 176, 58, 92,
+        111, 134, 78, 201, 15, 84, 39, 220, 66, 97,
+        105, 142, 71, 185, 49, 81, 27, 170, 53, 95,
+        41
+    };
+    *keyPrivate = {
+        34, 78, 123, 56, 89, 210, 45, 190, 12, 87,
+        67, 150, 32, 76, 54, 200, 11, 99, 101, 145,
+        67, 189, 43, 88, 29, 176, 58, 92, 111, 134,
+        78, 201, 15, 84, 39, 220, 66, 97, 105, 142,
+        71, 185, 49, 81, 27, 170, 53, 95, 102, 147,
+        68, 191, 44, 85, 30, 177, 59, 93, 112, 135,
+        79, 202, 16, 85, 40, 221, 67, 98, 23, 87,
+        91, 65
+    };
+    return 1;
+}
+
 void key::createRSAKey() {
     std::string keyName;
 
@@ -168,7 +228,12 @@ void key::createRSAKey() {
         return;
     }
 
-    if (writeKey(keyName, {0}, true) == 1 && writeKey(keyName, {0}, false) == 1) {
+    auto* keyPublic = new std::vector<uint8_t>();
+    auto* keyPrivate = new std::vector<uint8_t>();
+
+    createKey(keyPublic, keyPrivate);
+
+    if (writeKey(keyName, keyPublic, true) == 1 && writeKey(keyName, keyPrivate, false) == 1) {
         std::cout << keyName + " key successfully created!\n";
         std::cout << "You can find your newly created key here: " << keysFolder << std::endl;
     } else {
@@ -176,10 +241,14 @@ void key::createRSAKey() {
     }
 }
 
-std::pair<unsigned long int, unsigned long int> getPrivateKey(std::string& name) {
-    return {647'090'566'899, 234'099'456'876'004};
+std::vector<uint8_t> * key::getPrivateKey(std::string &name) {
+    std::vector<uint8_t>* data = new std::vector<uint8_t>;
+    readKey(name, data, false);
+    return data;
 }
 
-std::pair<unsigned long int, unsigned long int> getPublicKey(std::string& name) {
-    return {143'548'453'234, 234'099'456'876'004};
+std::vector<uint8_t> * key::getPublicKey(std::string &name) {
+    std::vector<uint8_t>* data = new std::vector<uint8_t>;
+    readKey(name, data, true);
+    return data;
 }
