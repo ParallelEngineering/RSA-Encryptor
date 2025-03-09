@@ -1,18 +1,18 @@
 #include <iostream>
 
 #include "cli.h"
-#include "keys.h"
+#include "key.h"
 
 void cli::help() {
      std::cout << "Welcome to RSA-Encryptor" << std::endl;
 }
 
-void cli::key::create() {
-     keys::createRSAKey();
+void cli::keyManager::create() {
+     key::createRSAKey();
 }
 
-void cli::key::list() {
+void cli::keyManager::list() {
 }
 
-void cli::key::print(const std::string& name, bool publicKey, bool privateKey) {
+void cli::keyManager::print(const std::string& name, bool publicKey, bool privateKey) {
 }
