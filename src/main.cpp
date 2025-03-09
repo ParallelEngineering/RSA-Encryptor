@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
                     cli::keyManager::create();
                } else if (subFeature == "list") {
                     cli::keyManager::list();
-               } else if (subFeature == "print") {
+               } else if (subFeature == "print" && argv[3] != nullptr) {
                     cli::keyManager::print(argv[3], arguments.publicKey, arguments.privateKey);
                }
 
@@ -54,7 +54,6 @@ int main(int argc, char* argv[]) {
           cli::help();
      }
 
-     std::vector<uint8_t> test = key::base64Decode(key::base64Encode({255, 0, 128, 144, 54, 12, 1}));
 
      return 0;
 }
