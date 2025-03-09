@@ -65,43 +65,87 @@ int key::writeKey(const std::string& name, std::vector<uint8_t> data, const bool
     return 1;
 }
 
-std::string key::base64Encode(std::vector<uint8_t> data) {
+std::string key::base64Encode(const std::vector<uint8_t> &data) {
+    // TODO the encoding might not work if the data size is not dividable by 3
+    if (data.size() % 3 != 0) std::cerr << "Encoding data size not dividable by 3" << std::endl;
 
-    const unsigned int charCount = data.size() * 1.5;
-    char* result = new char[charCount];
-    unsigned int resultIndex = charCount - 1;
+    std::vector<uint8_t> result;
+    int index = 0;
 
-    while (!data.empty()) {
+    while (index < data.size()) {
 
         uint32_t dataSegment = 0;
 
-        // pop 3 numbers from the data vector and store it as one block in dataSegment
-        for (int i = 0; i < 3; i++) {
-            if (data.size() < 1) break;
-            uint8_t number = data.back();
-            data.pop_back();
+        // take 3 numbers from the vector
+        for (int i = 2; i >= 0; i--) {
+            // prevent from reading outside the vector
+            if (index > data.size() - 1) break;
+
+            uint8_t number = data.at(index++);
             dataSegment += number << i * 8;
         }
 
         // 4 times, put 6 bits from dataSegment into result array
         for (int j = 0; j < 4; j++) {
-            if (resultIndex < 1) break;
-            result[resultIndex--] = static_cast<uint8_t>(dataSegment & 0b00111111);
-            dataSegment >>= 6;
+            dataSegment <<= 6;
+            result.push_back(static_cast<uint8_t>((dataSegment & 0b00111111 << 24) >> 24));
         }
     }
 
     std::string outString;
 
     // convert the numeric value to the corresponding char of the base64 charset
-    for (char& c : std::string(result, charCount)) {
+    for (auto c : result) {
         outString += base64Chars[c];
     }
 
-    // free memory space
-    delete[] result;
-
     return outString;
+}
+
+std::vector<uint8_t> key::base64Decode(std::string data) {
+    // TODO the decoding might not work if the data size is not dividable by 4
+    if (data.size() % 4 != 0) std::cerr << "Decoding data size not dividable by 4" << std::endl;
+    
+    std::vector<uint8_t> result;
+
+    while (!data.empty()) {
+        // remove 4 chars from the string
+        std::string letterSegment = data.substr(0, 4);
+        data.erase(0, 4);
+
+        u_int32_t dataSegment = 0;
+
+        // put 4 chars in one binary string
+        for (int i = 3; i >= 0; i--) {
+            // check if there are remaining letters
+            if (i > letterSegment.length() - 1) continue;
+
+            const uint8_t number = getBase64Index(letterSegment.at(3 - i));
+
+            // check for valid char code
+            if (number > 0b111111) {
+                std::cerr << "trying to Decode not falis char: " << letterSegment.at(i) << std::endl;
+                continue;
+            }
+            dataSegment += number << i * 6;
+        }
+
+        // read data from binary string
+        for (int j = 0; j < 3; j++) {
+            dataSegment <<= 8;
+            result.push_back((dataSegment & 0xFF << 24) >> 24);
+        }
+    }
+    return result;
+}
+
+uint8_t key::getBase64Index(char letter) {
+    for (int i = 0; base64Chars[i] != '\0'; i++) {
+        if (base64Chars[i] == letter) {
+            return i;
+        }
+    }
+    return 0;
 }
 
 void key::createRSAKey() {
