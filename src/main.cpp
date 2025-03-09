@@ -54,5 +54,7 @@ int main(int argc, char* argv[]) {
           cli::help();
      }
 
+     std::vector<uint8_t> test = key::base64Decode(key::base64Encode({255, 0, 128, 144, 54, 12, 1}));
+
      return 0;
 }
