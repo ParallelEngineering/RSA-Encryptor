@@ -6,6 +6,7 @@
 
 #include "utility.h"
 #include "cli.h"
+#include "key.h"
 #include "vec/operations.h"
 
 int main(int argc, char* argv[]) {
@@ -31,19 +32,17 @@ int main(int argc, char* argv[]) {
                }
           }
 
-          std::cout << arguments.publicKey << std::endl;
-
           std::string feature = argv[1];
 
           if (feature == "key" && argv[2] != nullptr) {
                std::string subFeature = argv[2];
 
                if (subFeature == "create") {
-                    cli::key::create();
+                    cli::keyManager::create();
                } else if (subFeature == "list") {
-                    cli::key::list();
+                    cli::keyManager::list();
                } else if (subFeature == "print") {
-                    cli::key::print(argv[3], arguments.publicKey, arguments.privateKey);
+                    cli::keyManager::print(argv[3], arguments.publicKey, arguments.privateKey);
                }
 
           } else if (feature == "help") {
@@ -55,20 +54,5 @@ int main(int argc, char* argv[]) {
           cli::help();
      }
 
-     // std::cout << util.checkForPrime(54557) << std::endl;
-     // std::cout << util.checkForPrime(29) << std::endl;
-     //std::vector<uint8_t> num1 = {255, 255, 255}; // 16777215 in dezimal
-     //std::vector<uint8_t> num2 = {0x01};          // Add one
-
-     std::vector<uint8_t> num1 = convertToVector(16777215); // 16777215 in dezimal
-     std::vector<uint8_t> num2 = convertToVector(1);          // Add one
-
-     std::vector<uint8_t> result = add(num1, num2);
-
-     // This gives out the result as a hex number
-     for (auto it = result.rbegin(); it != result.rend(); ++it) {
-          printf("%02X", *it);
-     }
-     std::cout << std::endl;
      return 0;
 }
