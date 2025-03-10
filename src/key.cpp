@@ -151,7 +151,7 @@ std::vector<uint8_t> key::base64Decode(std::string data) {
         std::string letterSegment = data.substr(0, 4);
         data.erase(0, 4);
 
-        u_int32_t dataSegment = 0;
+        uint32_t dataSegment = 0;
 
         // put 4 chars in one binary string
         for (int i = 3; i >= 0; i--) {

@@ -1,13 +1,19 @@
 #include <iostream>
+
 #include <vector>
+
 #include <cstdint>
 
-[[nodiscard]] std::vector<uint8_t> add(const std::vector<uint8_t>& a, const std::vector<uint8_t>& b) {
+[[nodiscard]] std::vector<std::uint8_t> add(
+    const std::vector<std::uint8_t> &a,
+    const std::vector<std::uint8_t> &b) noexcept
+{
+    // Time complexity O(iterations)
     // Initialize the result vector to store the sum
-    std::vector<uint8_t> result;
+    std::vector<std::uint8_t> result;
 
     // Get the max iterations based on the largest vector
-    int iterations = std::max(a.size(), b.size());
+    const int iterations = std::max(a.size(), b.size());
 
     // Carry to handle overflow between bytes
     std::uint16_t carry = 0;
@@ -22,14 +28,14 @@
         {
             sum += a[i];
         }
-        
+
         // Only add to sum if we actually have a value in b
         if (i < b.size())
         {
             sum += b[i];
         }
 
-        // Calculate the carry for the next byte (overflow beyond 255)
+        // Calculate the carry which is the overflow beyond 255
         carry = sum >> 8;
 
         // Clear out everything except the lsb
@@ -42,26 +48,27 @@
         sum &= 0xFF;
 
         // Append the least significant byte of the sum to the result
-        result.push_back(static_cast<uint8_t>(sum));
+        result.push_back(static_cast<std::uint8_t>(sum));
     }
 
     // If we got a carry we append this as well
     if (carry)
     {
-        result.push_back(static_cast<uint8_t>(carry));
+        result.push_back(static_cast<std::uint8_t>(carry));
     }
 
     return result;
 }
 
-[[nodiscard]] std::vector<uint8_t> convertToVector(std::uint64_t number) {
-    
-    std::vector<uint8_t> result;
+[[nodiscard]] std::vector<std::uint8_t> convertToVector(std::uint64_t number) noexcept {
+
+    std::vector<std::uint8_t> result;
 
     // Loop until the whole number is zero
-    while (number) {
+    while (number)
+    {
         // We only care for the lsb
-        result.push_back(static_cast<uint8_t>(number & 0xFF));
+        result.push_back(static_cast<std::uint8_t>(number & 0xFF));
 
         // Shift the number by 8 to the right
         number >>= 8;
@@ -70,7 +77,46 @@
     return result;
 }
 
-[[nodiscard]] std::vector<uint8_t> mul(const std::vector<uint8_t>& a, const std::vector<uint8_t>& b) {
+[[nodiscard]] std::vector<std::uint8_t> mul(
+    const std::vector<std::uint8_t> &a,
+    const std::vector<std::uint8_t> &b) noexcept
+{
+    // Time complexity O(aSize * bSize)
+    const std::uint64_t aSize = a.size();
+    const std::uint64_t bSize = b.size();
+
+    // Initialize the result vector with zeros, with the size of aSize + bSize
+    std::vector<std::uint8_t> result(aSize + bSize, 0);
+
+    for (std::uint64_t i = 0; i < aSize; i++)
+    {
+        // Set up the carry value for each iteration
+        std::uint16_t carry = 0;
+
+        for (uint64_t x = 0; x < bSize; x++)
+        {
+            // Calculate the product by adding up the previous result, the carry, and the new product
+            std::uint16_t product = result[i + x] + carry + (a[i] * b[x]);
+
+            // Calculate the carry which is the overflow beyond 255
+            carry = product >> 8;
+
+            // Store the least significant byte (lsb) of the product in the result
+            result[i + x] = static_cast<std::uint8_t>(product & 0xFF);
+        }
+
+        // If there is a carry, append it to the result
+        // But with the offset of bSize because of the previous inner loop
+        result[i + bSize] += static_cast<std::uint8_t>(carry);
+    }
+
+    return result;
+}
+
+[[nodiscard]] std::vector<std::uint8_t> div(
+    const std::vector<std::uint8_t> &a,
+    const std::vector<std::uint8_t> &b) noexcept
+{
     std::vector<std::uint8_t> result;
     return result;
 }
