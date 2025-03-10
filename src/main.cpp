@@ -54,6 +54,17 @@ int main(int argc, char* argv[]) {
           cli::help();
      }
 
+     std::vector<uint8_t> num1 = convertToVector(55555555);
+     std::vector<uint8_t> num2 = convertToVector(45678);
+
+     std::vector<uint8_t> result = mul(num1, num2);
+
+     // This gives out the result as a hex number
+     for (auto it = result.rbegin(); it != result.rend(); ++it) {
+          printf("%02X", *it);
+     }
+     std::cout << std::endl;
+
 
      return 0;
 }
