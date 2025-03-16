@@ -1,3 +1,6 @@
+#ifndef CLI_H
+#define CLI_H
+
 namespace cli {
     void help();
 
@@ -7,3 +10,5 @@ namespace cli {
         void print(const std::string& name, bool publicKey, bool privateKey);
     }
 }
+
+#endif

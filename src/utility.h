@@ -1,3 +1,6 @@
+#ifndef UTILITY_H
+#define UTILITY_H
+
 #include <iostream>
 
 class utility
@@ -10,3 +13,4 @@ public:
     bool checkForPrime(int number);
 };
 
+#endif
