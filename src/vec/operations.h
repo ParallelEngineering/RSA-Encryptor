@@ -1,7 +1,8 @@
+#ifndef VEC_OPERATIONS_H
+#define VEC_OPERATIONS_H
+
 #include <iostream>
-
 #include <vector>
-
 #include <cstdint>
 
 [[nodiscard]] std::vector<std::uint8_t> add(
@@ -120,3 +121,5 @@
     std::vector<std::uint8_t> result;
     return result;
 }
+
+#endif

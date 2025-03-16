@@ -1,3 +1,6 @@
+#ifndef KEY_H
+#define KEY_H
+
 #include <iostream>
 #include <filesystem>
 #include <map>
@@ -36,3 +39,5 @@ public:
     static std::vector<uint8_t>* getPrivateKey(std::string &name);
     static std::vector<uint8_t>* getPublicKey(std::string &name);
 };
+
+#endif
