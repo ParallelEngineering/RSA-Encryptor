@@ -123,7 +123,7 @@ std::string key::base64Encode(const std::vector<uint8_t> &data) {
             dataSegment += number << i * 8;
         }
 
-        // 4 times, put 6 bits from dataSegment into result array
+        // 4 times, put 6 bits from dataSegment into result vector
         for (int j = 0; j < 4; j++) {
             dataSegment <<= 6;
             result.push_back(static_cast<uint8_t>((dataSegment & 0b00111111 << 24) >> 24));
