@@ -5,6 +5,14 @@
 #include <vector>
 #include <cstdint>
 
+[[nodiscard]] bool isZero (const std::vector<std::uint8_t> &a) {
+    for (auto number: a) {
+        if (number != 0) return false;
+    }
+
+    return true;
+}
+
 [[nodiscard]] std::vector<std::uint8_t> add(
     const std::vector<std::uint8_t> &a,
     const std::vector<std::uint8_t> &b) noexcept
