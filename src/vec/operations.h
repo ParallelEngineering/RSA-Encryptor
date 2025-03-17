@@ -122,4 +122,20 @@
     return result;
 }
 
+[[nodiscard]] std::vector<std::uint8_t> pow(
+    const std::vector<std::uint8_t> &a,
+    const uint64_t &pow) noexcept
+{
+    // copy the value from a into result while keeping a constant
+    std::vector<uint8_t> result;
+    std::copy(a.begin(), a.end(), std::back_inserter(result));
+
+    // start the loop at 1, because the first number is already assigned to result
+    for (int i = 1; i < pow; i++) {
+        result = mul(result, a);
+    }
+
+    return result;
+}
+
 #endif
