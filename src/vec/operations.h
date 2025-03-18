@@ -123,6 +123,48 @@
     return result;
 }
 
+// the return value can only be positive, if it would be negative, 0 is returned
+[[nodiscard]] std::vector<std::uint8_t> sub(
+    const std::vector<std::uint8_t> &a,
+    const std::vector<std::uint8_t> &b) noexcept
+{
+    // prevent from ending the subtraction before going over the hole subtractor and stop if the result can only be negative
+    if (getStartBitIndex(b) > getStartBitIndex(a)) return {0};
+
+    std::vector<std::uint8_t> result;
+
+    // handle an underflow when subtracting
+    bool borrow = false;
+
+    for (int i = 0; i < a.size(); i++)
+    {
+        std::int32_t subtract;
+        // check for the end of the subtractor
+        if (i >= b.size()) {
+            subtract = borrow;
+        } else {
+            subtract = borrow + b[i];
+        }
+        borrow = false;
+
+        if (a[i] >= subtract) {
+            // if the current number is as least as big as subtract
+            uint8_t number = a[i] - subtract;
+            result.push_back(number);
+        } else {
+            // borrow from the next number
+            subtract -= 256;
+            borrow = true;
+
+            // here subtract can only be 0 or negative
+            uint8_t number = a[i] - subtract;
+            result.push_back(number);
+        }
+    }
+
+    return result;
+}
+
 [[nodiscard]] std::vector<std::uint8_t> convertToVector(std::uint64_t number) noexcept {
 
     std::vector<std::uint8_t> result;
