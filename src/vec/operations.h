@@ -5,6 +5,33 @@
 #include <vector>
 #include <cstdint>
 
+[[nodiscard]] uint64_t getStartBitIndex (const std::vector<std::uint8_t> &a) {
+    uint64_t index = 0;
+    uint64_t bitsSince1 = 0;
+
+    for (auto number: a) {
+        // skip 8 bits if all zero
+        if (number == 0) {
+            bitsSince1 += 8;
+            continue;
+        }
+        // go over every bit in number 
+        for (int i = 0; i < sizeof(uint8_t) * 8; i++) {
+            // select the current bit using a bitmask
+            if ((number & 0b1 << i) != 0) {
+                // increment the index by the bits since the last increment
+                index += bitsSince1 + 1;
+                bitsSince1 = 0;
+            } else {
+                bitsSince1++;
+            }
+        }
+    }
+
+    // returns position of the first bit needed for the number
+    return index - 1;
+}
+
 [[nodiscard]] bool isZero (const std::vector<std::uint8_t> &a) {
     for (auto number: a) {
         if (number != 0) return false;
