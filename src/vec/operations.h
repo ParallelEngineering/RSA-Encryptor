@@ -11,16 +11,16 @@ namespace operations {
         uint64_t bitsSince1 = 0;
 
         for (auto number: a) {
-            // skip 8 bits if all zero
+            // Skip 8 bits if all zero
             if (number == 0) {
                 bitsSince1 += 8;
                 continue;
             }
-            // go over every bit in number
+            // Go over every bit in number
             for (int i = 0; i < sizeof(uint8_t) * 8; i++) {
-                // select the current bit using a bitmask
+                // Select the current bit using a bitmask
                 if ((number & 0b1 << i) != 0) {
-                    // increment the index by the bits since the last increment
+                    // Increment the index by the bits since the last increment
                     index += bitsSince1 + 1;
                     bitsSince1 = 0;
                 } else {
@@ -29,7 +29,7 @@ namespace operations {
             }
         }
 
-        // returns position of the first bit needed for the number
+        // Returns position of the first bit needed for the number
         return index - 1;
     }
 
@@ -46,7 +46,7 @@ namespace operations {
         const std::vector<std::uint8_t> &b) noexcept
     {
         const uint64_t iterations = a.size() > b.size() ? a.size() : b.size();
-        // in case both numbers are the same length these variables could point ot the same vector
+        // In case both numbers are the same length these variables could point ot the same vector
         const std::vector<std::uint8_t> shortest = a.size() < b.size() ? a : b;
         const std::vector<std::uint8_t> longest = a.size() > b.size() ? a : b;
 
@@ -124,23 +124,23 @@ namespace operations {
         return result;
     }
 
-    // the return value can only be positive, if it would be negative, 0 is returned
+    // The return value can only be positive, if it would be negative, 0 is returned
     [[nodiscard]] std::vector<std::uint8_t> sub(
         const std::vector<std::uint8_t> &a,
         const std::vector<std::uint8_t> &b) noexcept
     {
-        // prevent from ending the subtraction before going over the hole subtractor and stop if the result can only be negative
+        // Prevent from ending the subtraction before going over the hole subtractor and stop if the result can only be negative
         if (getStartBitIndex(b) > getStartBitIndex(a)) return {0};
 
         std::vector<std::uint8_t> result;
 
-        // handle an underflow when subtracting
+        // Handle an underflow when subtracting
         bool borrow = false;
 
         for (int i = 0; i < a.size(); i++)
         {
             std::int32_t subtract;
-            // check for the end of the subtractor
+            // Check for the end of the subtractor
             if (i >= b.size()) {
                 subtract = borrow;
             } else {
@@ -149,15 +149,15 @@ namespace operations {
             borrow = false;
 
             if (a[i] >= subtract) {
-                // if the current number is as least as big as subtract
+                // If the current number is as least as big as subtract
                 uint8_t number = a[i] - subtract;
                 result.push_back(number);
             } else {
-                // borrow from the next number
+                // Borrow from the next number
                 subtract -= 256;
                 borrow = true;
 
-                // here subtract can only be 0 or negative
+                // Here subtract can only be 0 or negative
                 uint8_t number = a[i] - subtract;
                 result.push_back(number);
             }
@@ -238,11 +238,11 @@ namespace operations {
         const std::vector<std::uint8_t> &a,
         const uint64_t &pow) noexcept
     {
-        // copy the value from a into result while keeping a constant
+        // Copy the value from a into result while keeping a constant
         std::vector<uint8_t> result;
         std::copy(a.begin(), a.end(), std::back_inserter(result));
 
-        // start the loop at 1, because the first number is already assigned to result
+        // Start the loop at 1, because the first number is already assigned to result
         for (int i = 1; i < pow; i++) {
             result = mul(result, a);
         }
