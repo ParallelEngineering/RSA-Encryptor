@@ -13,6 +13,33 @@
     return true;
 }
 
+[[nodiscard]] bool isEqual (
+    const std::vector<std::uint8_t> &a,
+    const std::vector<std::uint8_t> &b) noexcept
+{
+    const uint64_t iterations = a.size() > b.size() ? a.size() : b.size();
+    // in case both numbers are the same length these variables could point ot the same vector
+    const std::vector<std::uint8_t> shortest = a.size() < b.size() ? a : b;
+    const std::vector<std::uint8_t> longest = a.size() > b.size() ? a : b;
+
+    for (uint64_t i = 0; i < iterations; i++) {
+        if (i >= shortest.size()) {
+            if (longest[i] != 0) return false;
+        } else {
+            if (a[i] != b[i]) return false;
+        }
+    }
+
+    return true;
+}
+
+[[nodiscard]] bool isBigger (
+    const std::vector<std::uint8_t> &a,
+    const std::vector<std::uint8_t> &b) noexcept
+{
+    return true;
+}
+
 [[nodiscard]] std::vector<std::uint8_t> add(
     const std::vector<std::uint8_t> &a,
     const std::vector<std::uint8_t> &b) noexcept
