@@ -1,0 +1,31 @@
+# It builds the project on multiple operating systems (Ubuntu, Windows, and macOS)
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  debug:
+    name: Debug Build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Build Project
+        uses: threeal/cmake-action@v2.1.0
+        with:
+          run-build: false
+
+      - name: Build Debug
+        run: cmake --build debug --config Debug
+
+      - name: Build Release
+        run: cmake --build release --config Release
