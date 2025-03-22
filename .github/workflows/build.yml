@@ -1,5 +1,7 @@
 # It builds the project on multiple operating systems (Ubuntu, Windows, and macOS)
 
+name: Build Project
+
 on:
   pull_request:
     branches:
@@ -12,6 +14,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
+        build-configuration: [ Debug, Release ]
 
     steps:
       - name: Checkout repository
@@ -22,10 +25,4 @@ jobs:
       - name: Build Project
         uses: threeal/cmake-action@v2.1.0
         with:
-          run-build: false
-
-      - name: Build Debug
-        run: cmake --build debug --config Debug
-
-      - name: Build Release
-        run: cmake --build release --config Release
+          args: -DCMAKE_BUILD_TYPE=${{ matrix.build-configuration }}
