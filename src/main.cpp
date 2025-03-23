@@ -54,10 +54,10 @@ int main(int argc, char* argv[]) {
           cli::help();
      }
 
-     std::vector<uint8_t> num1 = operations::convertToVector(55555555);
+     //std::vector<uint8_t> num1 = operations::convertToVector(55555555);
      std::vector<uint8_t> num2 = operations::convertToVector(45678);
 
-     //std::vector<uint8_t> num1 = {00000000, 00000000,00000000,00000000,00000000, 7};
+     std::vector<uint8_t> num1 = {00000000, 00000000,00000000,00000000,00000000, 7};
 
      std::vector<uint8_t> result = operations::mul(num1, num2);
      std::cout << operations::isBigger(num2, num1) << std::endl;

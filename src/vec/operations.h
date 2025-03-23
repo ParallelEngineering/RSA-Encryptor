@@ -72,14 +72,36 @@ namespace operations {
         const std::uint32_t bSize = b.size();
         const std::uint64_t iterations = aSize > bSize ? aSize : bSize;
 
+        bool aFirstNumber = false;
+        bool bFirstNumber = false;
+
         // We loop reverse throw all the vectors to catch leading zeros
         for (std::uint64_t i = iterations - 1; i > 0; i--) {
-            // Check for leading zeros in one of the two vectors
-
             const std::uint32_t index = i - 1;
 
             const std::uint8_t aValue = (index < aSize) ? a[index] : 0;
+            if (aValue != 0)
+            {
+                aFirstNumber = true;
+            }
+            
             const std::uint8_t bValue = (index < bSize) ? b[index] : 0;
+
+            if (bValue != 0)
+            {
+                bFirstNumber = true;
+            }
+
+            if (aFirstNumber && !bFirstNumber)
+            {
+                return true;
+            }
+
+            if (!aFirstNumber && bFirstNumber)
+            {
+                return false;
+            }
+            
 
             if (aValue > bValue)
             {
