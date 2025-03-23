@@ -297,10 +297,8 @@ namespace operations {
                 if (dividendIndex < 0) {
                     quotientBuffer <<= 1;
 
-                    if (remaining != nullptr) {
-                        *remaining = dividendMask;
-                    }
-
+                    // If remaining pointer is passed, set the remaining value
+                    if (remaining != nullptr) *remaining = dividendMask;
                     break;
                 }
 
@@ -317,10 +315,8 @@ namespace operations {
                 if (dividendIndex < 0) {
                     quotientBuffer <<= 1;
 
-                    if (remaining != nullptr) {
-                        *remaining = dividendMask;
-                    }
-
+                    // If remaining pointer is passed, set the remaining value
+                    if (remaining != nullptr) *remaining = dividendMask;
                     break;
                 }
 
