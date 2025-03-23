@@ -7,17 +7,17 @@
 
 namespace operations {
     [[nodiscard]] uint64_t getStartBitIndex (const std::vector<std::uint8_t> &a) {
-        uint64_t index = 0;
-        uint64_t bitsSince1 = 0;
+        std::uint64_t index = 0;
+        std::uint64_t bitsSince1 = 0;
 
-        for (auto number: a) {
+        for (std::uint8_t number: a) {
             // Skip 8 bits if all zero
             if (number == 0) {
                 bitsSince1 += 8;
                 continue;
             }
             // Go over every bit in number
-            for (int i = 0; i < sizeof(uint8_t) * 8; i++) {
+            for (std::uint64_t i = 0; i < sizeof(std::uint8_t) * 8; i++) {
                 // Select the current bit using a bitmask
                 if ((number & 0b1 << i) != 0) {
                     // Increment the index by the bits since the last increment
@@ -34,7 +34,7 @@ namespace operations {
     }
 
     [[nodiscard]] bool isZero (const std::vector<std::uint8_t> &a) {
-        for (auto number: a) {
+        for (std::uint8_t number: a) {
             if (number != 0) return false;
         }
 
@@ -53,7 +53,7 @@ namespace operations {
         const std::uint32_t shortest = aSize < bSize ? aSize : bSize;
         const std::vector<std::uint8_t> longest = aSize > bSize ? a : b;
 
-        for (uint64_t i = 0; i < iterations; i++) {
+        for (std::uint64_t i = 0; i < iterations; i++) {
             if (i >= shortest) {
                 if (longest[i] != 0) return false;
             } else {
@@ -68,7 +68,27 @@ namespace operations {
         const std::vector<std::uint8_t> &a,
         const std::vector<std::uint8_t> &b) noexcept
     {
-        return true;
+        const std::uint32_t aSize = a.size();
+        const std::uint32_t bSize = b.size();
+        const std::uint64_t iterations = aSize > bSize ? aSize : bSize;
+
+        // We loop reverse throw all the vectors to catch leading zeros
+        for (std::uint64_t i = iterations - 1; i > 0; i--) {
+            // Check for leading zeros in one of the two vectors
+
+            const std::uint32_t index = i - 1;
+
+            const std::uint8_t aValue = (index < aSize) ? a[index] : 0;
+            const std::uint8_t bValue = (index < bSize) ? b[index] : 0;
+
+            if (aValue > bValue)
+            {
+                return true;
+            }
+        }
+        
+
+        return false;
     }
 
     [[nodiscard]] std::vector<std::uint8_t> add(
@@ -153,7 +173,7 @@ namespace operations {
 
             if (a[i] >= subtract) {
                 // If the current number is as least as big as subtract
-                uint8_t number = a[i] - subtract;
+                std::uint8_t number = a[i] - subtract;
                 result.push_back(number);
             } else {
                 // Borrow from the next number
@@ -161,7 +181,7 @@ namespace operations {
                 borrow = true;
 
                 // Here subtract can only be 0 or negative
-                uint8_t number = a[i] - subtract;
+                std::uint8_t number = a[i] - subtract;
                 result.push_back(number);
             }
         }
@@ -239,7 +259,7 @@ namespace operations {
 
     [[nodiscard]] std::vector<std::uint8_t> pow(
         const std::vector<std::uint8_t> &a,
-        const uint64_t &pow) noexcept
+        const std::uint64_t &pow) noexcept
     {
         // Copy the value from a into result while keeping a constant
         std::vector<uint8_t> result;
