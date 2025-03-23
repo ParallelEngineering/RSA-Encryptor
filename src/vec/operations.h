@@ -72,55 +72,17 @@ namespace operations {
         const std::uint32_t bSize = b.size();
         const std::uint64_t iterations = aSize > bSize ? aSize : bSize;
 
-        bool aNonZero = false;
-        bool bNonZero = false;
-
         // We loop reverse throw all the vectors to catch leading zeros
         for (std::uint64_t i = iterations - 1; i > 0; i--) {
-            const std::uint32_t index = i - 1;
 
-            // Check if the index is within the size of the a vector
-            // If it isn't within the size we just ste it to zero
-            const std::uint8_t aValue = (index < aSize) ? a[index] : 0;
+            const std::uint8_t aValue = (i < aSize) ? a[i] : 0;
+            const std::uint8_t bValue = (i < bSize) ? b[i] : 0;
 
-            // Check for leading zero
-            if (aValue != 0)
-            {
-                aNonZero = true;
-            }
-            
-            // Sane as above but with the b vector
-            const std::uint8_t bValue = (index < bSize) ? b[index] : 0;
-
-            // Check for leading zero
-            if (bValue != 0)
-            {
-                bNonZero = true;
-            }
-
-            // If we got no zeros on a but have one on b
-            // Then a is greater then b
-            if (aNonZero && !bNonZero)
-            {
-                return true;
-            }
-
-            // If we got no zeros on a but have one on b
-            // Then a is greater then b
-            if (!aNonZero && bNonZero)
-            {
-                return false;
-            }
-
-            // We can just compare the two values since we loop
-            // reverse throw the two vectors
             if (aValue > bValue)
             {
                 return true;
             }
         }
-
-        return false;
     }
 
     [[nodiscard]] std::vector<std::uint8_t> add(
