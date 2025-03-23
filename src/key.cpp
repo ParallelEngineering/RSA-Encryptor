@@ -1,8 +1,8 @@
+#include "key.h"
+
 #include <filesystem>
 #include <fstream>
 #include <string>
-
-#include "key.h"
 
 std::filesystem::path key::keysPath() {
     // Navigate to the root directory of the project
@@ -22,17 +22,27 @@ int key::keyExists(std::string name) {
     std::filesystem::path keysFolder = keysPath();
 
     // go over every file in the KEY_FOLDER
-    for (const auto& entry : std::filesystem::directory_iterator(keysFolder)) {
+    for (const auto &entry : std::filesystem::directory_iterator(keysFolder)) {
         // check if the name matches
         if (entry.path().stem().string() == name) {
             // check if it's a public key
             if (entry.path().extension() == ".pub") {
                 // break the loop if both files are found
-                if (status == NONE) status = PUBLIC; else {status = BOTH; break;};
+                if (status == NONE)
+                    status = PUBLIC;
+                else {
+                    status = BOTH;
+                    break;
+                };
             }
             // check if it's a private key
             else if (entry.path().has_extension() == false) {
-                if (status == NONE) status = PRIVATE; else {status = BOTH; break;};
+                if (status == NONE)
+                    status = PRIVATE;
+                else {
+                    status = BOTH;
+                    break;
+                };
             }
         }
     }
@@ -40,12 +50,12 @@ int key::keyExists(std::string name) {
     return status;
 }
 
-int key::writeKey(const std::string& name, std::vector<uint8_t> *data, const bool isPublic) {
+int key::writeKey(const std::string &name, std::vector<uint8_t> *data, const bool isPublic) {
     if (data == nullptr) return -1;
 
     std::filesystem::path keysFolder = keysPath();
 
-    std::filesystem::path keyFile = keysFolder / (name + (isPublic? ".pub":""));
+    std::filesystem::path keyFile = keysFolder / (name + (isPublic ? ".pub" : ""));
     // load file in memory
     std::ofstream outFile(keyFile);
 
@@ -53,11 +63,11 @@ int key::writeKey(const std::string& name, std::vector<uint8_t> *data, const boo
     std::string base64Data = base64Encode(*data);
 
     if (outFile.is_open()) {
-        outFile << "-----BEGIN RSA " << (isPublic? "PUBLIC":"PRIVATE") << " KEY-----\n";
+        outFile << "-----BEGIN RSA " << (isPublic ? "PUBLIC" : "PRIVATE") << " KEY-----\n";
         for (int i = 0; i < base64Data.size(); i += 64) {
             outFile << base64Data.substr(i, 64) << "\n";
         }
-        outFile << "-----END RSA " << (isPublic? "PUBLIC":"PRIVATE") << " KEY-----\n";
+        outFile << "-----END RSA " << (isPublic ? "PUBLIC" : "PRIVATE") << " KEY-----\n";
         outFile.close();
     } else {
         std::cerr << "Could not write to file: " << keyFile << std::endl;
@@ -70,7 +80,7 @@ int key::writeKey(const std::string& name, std::vector<uint8_t> *data, const boo
 int key::readKey(const std::string &name, std::vector<uint8_t> *data, bool isPublic) {
     std::filesystem::path keysFolder = keysPath();
 
-    std::filesystem::path keyFile = keysFolder / (name + (isPublic? ".pub":""));
+    std::filesystem::path keyFile = keysFolder / (name + (isPublic ? ".pub" : ""));
     // load file in memory
     std::ifstream inFile(keyFile);
 
@@ -83,8 +93,7 @@ int key::readKey(const std::string &name, std::vector<uint8_t> *data, bool isPub
     std::string currentLine;
     std::string keyString;
 
-    while (getline (inFile, currentLine)) {
-
+    while (getline(inFile, currentLine)) {
         if (currentLine.empty()) continue;
         if (currentLine.at(0) == '-') continue;
 
@@ -111,7 +120,6 @@ std::string key::base64Encode(const std::vector<uint8_t> &data) {
     int index = 0;
 
     while (index < data.size()) {
-
         uint32_t dataSegment = 0;
 
         // take 3 numbers from the vector
@@ -143,7 +151,7 @@ std::string key::base64Encode(const std::vector<uint8_t> &data) {
 std::vector<uint8_t> key::base64Decode(std::string data) {
     // TODO the decoding might not work if the data size is not dividable by 4
     if (data.size() % 4 != 0) std::cerr << "Decoding data size not dividable by 4" << std::endl;
-    
+
     std::vector<uint8_t> result;
 
     while (!data.empty()) {
@@ -162,7 +170,8 @@ std::vector<uint8_t> key::base64Decode(std::string data) {
 
             // check for valid char code
             if (number > 0b111111) {
-                std::cerr << "trying to Decode not valid char: " << letterSegment.at(i) << std::endl;
+                std::cerr << "trying to Decode not valid char: " << letterSegment.at(i)
+                          << std::endl;
                 continue;
             }
             dataSegment += number << i * 6;
@@ -187,24 +196,14 @@ uint8_t key::getBase64Index(char letter) {
 }
 
 int key::createKey(std::vector<uint8_t> *keyPublic, std::vector<uint8_t> *keyPrivate) {
-    *keyPublic = {
-        23, 87, 45, 190, 12, 78, 34, 210, 56, 89,
-        123, 67, 90, 150, 32, 76, 54, 200, 11, 99,
-        101, 145, 67, 189, 43, 88, 29, 176, 58, 92,
-        111, 134, 78, 201, 15, 84, 39, 220, 66, 97,
-        105, 142, 71, 185, 49, 81, 27, 170, 53, 95,
-        41
-    };
-    *keyPrivate = {
-        34, 78, 123, 56, 89, 210, 45, 190, 12, 87,
-        67, 150, 32, 76, 54, 200, 11, 99, 101, 145,
-        67, 189, 43, 88, 29, 176, 58, 92, 111, 134,
-        78, 201, 15, 84, 39, 220, 66, 97, 105, 142,
-        71, 185, 49, 81, 27, 170, 53, 95, 102, 147,
-        68, 191, 44, 85, 30, 177, 59, 93, 112, 135,
-        79, 202, 16, 85, 40, 221, 67, 98, 23, 87,
-        91, 65
-    };
+    *keyPublic = {23,  87, 45, 190, 12,  78, 34,  210, 56, 89,  123, 67, 90, 150, 32,  76, 54,
+                  200, 11, 99, 101, 145, 67, 189, 43,  88, 29,  176, 58, 92, 111, 134, 78, 201,
+                  15,  84, 39, 220, 66,  97, 105, 142, 71, 185, 49,  81, 27, 170, 53,  95, 41};
+    *keyPrivate = {34,  78,  123, 56,  89,  210, 45,  190, 12,  87,  67,  150, 32, 76,  54,
+                   200, 11,  99,  101, 145, 67,  189, 43,  88,  29,  176, 58,  92, 111, 134,
+                   78,  201, 15,  84,  39,  220, 66,  97,  105, 142, 71,  185, 49, 81,  27,
+                   170, 53,  95,  102, 147, 68,  191, 44,  85,  30,  177, 59,  93, 112, 135,
+                   79,  202, 16,  85,  40,  221, 67,  98,  23,  87,  91,  65};
     return 1;
 }
 
@@ -228,8 +227,8 @@ void key::createRSAKey() {
         return;
     }
 
-    auto* keyPublic = new std::vector<uint8_t>();
-    auto* keyPrivate = new std::vector<uint8_t>();
+    auto *keyPublic = new std::vector<uint8_t>();
+    auto *keyPrivate = new std::vector<uint8_t>();
 
     createKey(keyPublic, keyPrivate);
 
@@ -241,14 +240,14 @@ void key::createRSAKey() {
     }
 }
 
-std::vector<uint8_t> * key::getPrivateKey(std::string &name) {
-    std::vector<uint8_t>* data = new std::vector<uint8_t>;
+std::vector<uint8_t> *key::getPrivateKey(std::string &name) {
+    std::vector<uint8_t> *data = new std::vector<uint8_t>;
     readKey(name, data, false);
     return data;
 }
 
-std::vector<uint8_t> * key::getPublicKey(std::string &name) {
-    std::vector<uint8_t>* data = new std::vector<uint8_t>;
+std::vector<uint8_t> *key::getPublicKey(std::string &name) {
+    std::vector<uint8_t> *data = new std::vector<uint8_t>;
     readKey(name, data, true);
     return data;
 }
