@@ -6,7 +6,7 @@
 #include <cstdint>
 
 namespace operations {
-    [[nodiscard]] uint64_t getStartBitIndex (const std::vector<std::uint8_t> &a) {
+    [[nodiscard]] std::uint64_t getStartBitIndex (const std::vector<std::uint8_t> &a) {
         std::uint64_t index = 0;
         std::uint64_t bitsSince1 = 0;
 
@@ -72,43 +72,53 @@ namespace operations {
         const std::uint32_t bSize = b.size();
         const std::uint64_t iterations = aSize > bSize ? aSize : bSize;
 
-        bool aFirstNumber = false;
-        bool bFirstNumber = false;
+        bool aNonZero = false;
+        bool bNonZero = false;
 
         // We loop reverse throw all the vectors to catch leading zeros
         for (std::uint64_t i = iterations - 1; i > 0; i--) {
             const std::uint32_t index = i - 1;
 
+            // Check if the index is within the size of the a vector
+            // If it isn't within the size we just ste it to zero
             const std::uint8_t aValue = (index < aSize) ? a[index] : 0;
+
+            // Check for leading zero
             if (aValue != 0)
             {
-                aFirstNumber = true;
+                aNonZero = true;
             }
             
+            // Sane as above but with the b vector
             const std::uint8_t bValue = (index < bSize) ? b[index] : 0;
 
+            // Check for leading zero
             if (bValue != 0)
             {
-                bFirstNumber = true;
+                bNonZero = true;
             }
 
-            if (aFirstNumber && !bFirstNumber)
+            // If we got no zeros on a but have one on b
+            // Then a is greater then b
+            if (aNonZero && !bNonZero)
             {
                 return true;
             }
 
-            if (!aFirstNumber && bFirstNumber)
+            // If we got no zeros on a but have one on b
+            // Then a is greater then b
+            if (!aNonZero && bNonZero)
             {
                 return false;
             }
-            
 
+            // We can just compare the two values since we loop
+            // reverse throw the two vectors
             if (aValue > bValue)
             {
                 return true;
             }
         }
-        
 
         return false;
     }
@@ -284,11 +294,11 @@ namespace operations {
         const std::uint64_t &pow) noexcept
     {
         // Copy the value from a into result while keeping a constant
-        std::vector<uint8_t> result;
+        std::vector<std::uint8_t> result;
         std::copy(a.begin(), a.end(), std::back_inserter(result));
 
         // Start the loop at 1, because the first number is already assigned to result
-        for (int i = 1; i < pow; i++) {
+        for (std::uint32_t i = 1; i < pow; i++) {
             result = mul(result, a);
         }
 

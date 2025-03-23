@@ -55,12 +55,13 @@ int main(int argc, char* argv[]) {
      }
 
      //std::vector<uint8_t> num1 = operations::convertToVector(55555555);
-     std::vector<uint8_t> num2 = operations::convertToVector(45678);
+     //std::vector<uint8_t> num2 = operations::convertToVector(45678);
 
      std::vector<uint8_t> num1 = {00000000, 00000000,00000000,00000000,00000000, 7};
+     std::vector<uint8_t> num2 = {00000000, 1,00000000, 15};
 
-     std::vector<uint8_t> result = operations::mul(num1, num2);
-     std::cout << operations::isBigger(num2, num1) << std::endl;
+     std::vector<uint8_t> result = operations::sub(num2, num1);
+     std::cout << operations::isBigger(num1, num2) << std::endl;
 
      // This gives out the result as a hex number
      for (auto it = result.rbegin(); it != result.rend(); ++it) {
