@@ -73,7 +73,7 @@ namespace operations {
         const std::uint64_t iterations = aSize > bSize ? aSize : bSize;
 
         // We loop reverse throw all the vectors to catch leading zeros
-        for (std::uint64_t i = iterations - 1; i > 0; i--) {
+        for (std::int64_t i = iterations - 1; i >= 0; i--) {
 
             const std::uint8_t aValue = (i < aSize) ? a[i] : 0;
             const std::uint8_t bValue = (i < bSize) ? b[i] : 0;
@@ -83,6 +83,8 @@ namespace operations {
                 return true;
             }
         }
+
+        return false;
     }
 
     [[nodiscard]] std::vector<std::uint8_t> add(
