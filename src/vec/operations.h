@@ -33,8 +33,7 @@ namespace operations {
         return index - 1;
     }
 
-    /* This function picks one bit from pickNumber and places it at the least significant
-     * position of number. */
+    // This function picks one bit from pickNumber and places it at the least significant position of number.
     [[nodiscard]] std::vector<std::uint8_t> addBitFromNumber (const std::vector<std::uint8_t> &number, const std::vector<std::uint8_t> &pickNumber, std::uint32_t index) {
         std::vector<std::uint8_t> result;
 
@@ -53,8 +52,7 @@ namespace operations {
             mostSignificantBit = currentByte & 0b1000000 == 0b10000000;
         }
 
-        /* In case the length of the vector and the actual number length matches, the number
-         * increases by one vector element with value 1 */
+        // In case the length of the vector and the actual number length matches, the numberincreases by one vector element with value 1
         if (mostSignificantBit) result.push_back(0b1);
 
         return result;
@@ -149,12 +147,6 @@ namespace operations {
             carry = sum >> 8;
 
             // Clear out everything except the lsb
-            // This is done by masking the sum with 255
-            // For example
-            // 0000000101111111 (=383)
-            // 0000000011111111 (=255)
-            // ----------------
-            // 0000000100000000
             sum &= 0xFF;
 
             // Append the least significant byte of the sum to the result
@@ -282,9 +274,9 @@ namespace operations {
         while (dividendIndex >= -1) {
 
             if (quotientBitIndex > 7) {
-                /* The quotient is stored from the most significant byte to the least significant
-                 * byte, in contrast to all the other vector based numbers.
-                 * Which is later reversed, at the end of the function. */
+                // The quotient is stored from the most significant byte to the least significant
+                // byte, in contrast to all the other vector based numbers.
+                // Which is later reversed, at the end of the function.
                 quotient.push_back(quotientBuffer);
                 quotientBuffer = 0;
                 quotientBitIndex = 0;
@@ -292,8 +284,7 @@ namespace operations {
 
             if (isEqual(dividendMask, divisor) || isBigger(dividendMask, divisor)) {
 
-                /* Stop the loop if the dividend is smaller than the divisor, because fractional
-                 * digits are not supported */
+                // Stop the loop if the dividend is smaller than the divisor, because fractional digits are not supported
                 if (dividendIndex < 0) {
                     quotientBuffer <<= 1;
 
@@ -310,8 +301,7 @@ namespace operations {
                 dividendMask = sub(dividendMask, divisor);
                 dividendMask = addBitFromNumber(dividendMask, dividend, dividendIndex--);
             } else {
-                /* Stop the loop if the dividend is smaller than the divisor, because fractional
-                 * digits are not supported */
+                // Stop the loop if the dividend is smaller than the divisor, because fractional digits are not supported
                 if (dividendIndex < 0) {
                     quotientBuffer <<= 1;
 
@@ -320,13 +310,11 @@ namespace operations {
                     break;
                 }
 
-                /* if the divisor is bigger than the dividend, we need to shift the dividend
-                 * and set the new bit as low */
+                // if the divisor is bigger than the dividend, we need to shift the dividend and set the new bit as low
                 quotientBuffer <<= 1;
                 quotientBitIndex++;
 
-                /* Stop the loop if the dividend is smaller than the divisor, because fractional
-                 * digits are not supported */
+                // Stop the loop if the dividend is smaller than the divisor, because fractional digits are not supported
                 if (dividendIndex < 0) break;
 
                 // Because dividendMask is smaller than divisor, we add the next bit from the dividend
