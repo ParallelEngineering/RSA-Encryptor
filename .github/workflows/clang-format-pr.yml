@@ -30,29 +30,5 @@ jobs:
       - name: Run clang-format style check
         uses: jidicula/clang-format-action@v4.15.0
         id: clang-format
-        continue-on-error: true
         with:
           clang-format-version: "20"
-
-      - name: Comment on PR
-        if: steps.clang-format.outcome == 'failure'
-        uses: thollander/actions-comment-pull-request@v3.0.1
-        with:
-          message: |
-            clang-format 20 needs to be run on this PR.
-            If you do not have clang-format installed, the maintainer will run it when merging.
-
-            _(execution **${{ github.run_id }}** / attempt **${{ github.run_attempt }}**)_
-          comment-tag: execution
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Comment on PR
-        if: steps.clang-format.outcome != 'failure'
-        uses: thollander/actions-comment-pull-request@v3.0.1
-        with:
-          message: |
-            _(execution **${{ github.run_id }}** / attempt **${{ github.run_attempt }}**)_
-          create-if-not-exists: false
-          comment-tag: execution
-          mode: delete
-          github-token: ${{ secrets.GITHUB_TOKEN }}

@@ -1,4 +1,4 @@
-# This workflow runs when a tag is pushed to the repository.
+# This workflow runs when a tag is pushed to the repository point to the main branch.
 # It builds the project on multiple operating systems (Ubuntu, Windows, and macOS) and
 # creates a pre-release.
 
@@ -12,10 +12,7 @@ on:
 jobs:
   release:
     name: Create Release
-    needs: build
     runs-on: ubuntu-latest
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -33,11 +30,12 @@ jobs:
 
   build:
     name: Build Project
+    needs: release
     runs-on: ${{ matrix.config.os }}
     strategy:
       matrix:
         config:
-          - { name: "Windows MSVC", os: windows-latest, cc: "cl", cxx: "cl" }
+          - { name: "Windows gcc", os: windows-latest, cc: "gcc", cxx: "g++" }
           - { name: "Ubuntu gcc", os: ubuntu-latest, cc: "gcc", cxx: "g++" }
           - { name: "MacOS clang", os: macos-latest, cc: "clang", cxx: "clang++" }
         build-configuration: [ Release ]
@@ -63,14 +61,11 @@ jobs:
         with:
           type: 'zip'
           path: 'build'
-          filename: 'build.zip'
+          filename: '${{ matrix.config.os}}-build.zip'
 
       - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
+        uses: alexellis/upload-assets@0.4.0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build.zip
-          asset_name: ${{ matrix.config.os }}.zip
-          asset_content_type: application/zip
+         asset_paths: '["${{ matrix.config.os}}-build.zip"]'
