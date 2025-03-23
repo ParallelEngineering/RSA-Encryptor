@@ -33,6 +33,33 @@ namespace operations {
         return index - 1;
     }
 
+    /* This function picks one bit from pickNumber and places it at the least significant
+     * position of number. */
+    [[nodiscard]] std::vector<std::uint8_t> addBitFromNumber (const std::vector<std::uint8_t> &number, const std::vector<std::uint8_t> &pickNumber, std::uint32_t index) {
+        std::vector<std::uint8_t> result;
+
+        // Check if the index is valid
+        if (index > getStartBitIndex(pickNumber)) {
+            return {0};
+        }
+
+        // Check if the bit at the given index is set
+        bool mostSignificantBit = pickNumber[index / 8] & 0b1 << index % 8;
+
+        for (std::uint8_t currentByte : number) {
+            result.push_back((currentByte << 1) + mostSignificantBit);
+
+            // Check if the most significant bit of the current byte is set
+            mostSignificantBit = currentByte & 0b1000000 == 0b10000000;
+        }
+
+        /* In case the length of the vector and the actual number length matches, the number
+         * increases by one vector element with value 1 */
+        if (mostSignificantBit) result.push_back(0b1);
+
+        return result;
+    }
+
     [[nodiscard]] bool isZero (const std::vector<std::uint8_t> &a) {
         for (std::uint8_t number: a) {
             if (number != 0) return false;
@@ -238,19 +265,65 @@ namespace operations {
         return result;
     }
 
-    // a is divided by b
     [[nodiscard]] std::vector<std::uint8_t> div(
-        const std::vector<std::uint8_t> &a,
-        const std::vector<std::uint8_t> &b) noexcept
-    {
-        const std::vector<std::uint8_t> dividend = a;
-        std::vector<std::uint8_t> result;
+        const std::vector<std::uint8_t> dividend,
+        const std::vector<std::uint8_t> &divisor) noexcept {
+        std::vector<std::uint8_t> quotient;
+        std::uint8_t quotientBuffer = 0;
+        std::uint16_t quotientBitIndex = 0;
 
-        while (!isZero(dividend)) {
+        // The index of the last bit in the dividendMask inside dividend
+        std::int64_t dividendIndex = getStartBitIndex(dividend);
+        // This copy's the most significant bit of the dividend
+        std::vector<std::uint8_t> dividendMask = addBitFromNumber({0}, dividend, dividendIndex--);
 
+        while (dividendIndex >= -1) {
+
+            if (quotientBitIndex > 7) {
+                /* The quotient is stored from the most significant byte to the least significant
+                 * byte, in contrast to all the other vector based numbers.
+                 * Which is later reversed, at the end of the function. */
+                quotient.push_back(quotientBuffer);
+                quotientBuffer = 0;
+                quotientBitIndex = 0;
+            }
+
+            if (isEqual(dividendMask, divisor) || isBigger(dividendMask, divisor)) {
+                // Shift the dividend and set the new bit as high
+                quotientBuffer <<= 1;
+                quotientBuffer++;
+                quotientBitIndex++;
+
+                dividendMask = sub(dividendMask, divisor);
+                dividendMask = addBitFromNumber(dividendMask, dividend, dividendIndex--);
+            } else {
+                /* Stop the loop if the dividend is smaller than the divisor, because fractional
+                 * digits are not supported */
+                if (dividendIndex < 0) {
+                    quotientBuffer <<= 1;
+                    break;
+                }
+
+                /* if the divisor is bigger than the dividend, we need to shift the dividend
+                 * and set the new bit as low */
+                quotientBuffer <<= 1;
+                quotientBitIndex++;
+
+                /* Stop the loop if the dividend is smaller than the divisor, because fractional
+                 * digits are not supported */
+                if (dividendIndex < 0) break;
+
+                // Because dividendMask is smaller than divisor, we add the next bit from the dividend
+                dividendMask = addBitFromNumber(dividendMask, dividend, dividendIndex--);
+            }
         }
 
-        return result;
+        if (quotientBuffer != 0) quotient.push_back(quotientBuffer);
+
+        // Reverse the quotient
+        std::reverse(quotient.begin(), quotient.end());
+
+        return quotient;
     }
 
     [[nodiscard]] std::vector<std::uint8_t> pow(
