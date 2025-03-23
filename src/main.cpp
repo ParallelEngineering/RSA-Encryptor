@@ -57,17 +57,14 @@ int main(int argc, char* argv[]) {
      //std::vector<uint8_t> num1 = operations::convertToVector(55555555);
      //std::vector<uint8_t> num2 = operations::convertToVector(45678);
 
-     std::vector<std::uint8_t> num1 = {0, 0, 0, 0, 0, 1};
-     std::vector<std::uint8_t> num2 = {0, 0, 15};
-     std::vector<std::uint8_t> num3 = {2};
-
      std::vector<std::uint8_t> result = operations::mul(num2, num1);
+
      std::cout << operations::isBigger(num1, num2) << std::endl;
 
      std::vector<std::uint8_t> result2 = operations::mul(result, num3);
 
      // This prints out the result as a hex number
-     for (auto it = result2.rbegin(); it != result2.rend(); ++it) {
+     for (auto it = result.rbegin(); it != result.rend(); ++it) {
           printf("%02X", *it);
      }
      std::cout << std::endl;
