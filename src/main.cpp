@@ -62,8 +62,8 @@ int main(int argc, char* argv[]) {
 
     std::vector<std::uint8_t> remainder;
 
-    std::vector<uint8_t> result = operations::div(num1, num2, remainder);
-
+    std::vector<uint8_t> result = operations::div(num1, num2, nullptr);
+    
     std::cout << "Remainder: " << remainder[0] << std::endl;
 
      // This prints out the result as a hex number
