@@ -10,38 +10,8 @@ on:
       - 'v*'
 
 jobs:
-  build:
-    name: Build Project
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          submodules: true
-
-      - name: Build Project
-        uses: threeal/cmake-action@v2.1.0
-        with:
-          run-build: false
-
-      - name: Build Release
-        run: cmake --build build --config Release
-
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.release.outputs.upload_url }}
-          asset_path: build/
-          asset_name: build-${{ matrix.os }}
-          asset_content_type: application/zip
-
   release:
+    name: Create Release
     needs: build
     runs-on: ubuntu-latest
     outputs:
@@ -60,3 +30,47 @@ jobs:
           release_name: Release ${{ github.ref }}
           draft: false
           prerelease: true
+
+  build:
+    name: Build Project
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      matrix:
+        config:
+          - { name: "Windows MSVC", os: windows-latest, cc: "cl", cxx: "cl" }
+          - { name: "Ubuntu gcc", os: ubuntu-latest, cc: "gcc", cxx: "g++" }
+          - { name: "MacOS clang", os: macos-latest, cc: "clang", cxx: "clang++" }
+        build-configuration: [ Release ]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Setup Ninja
+        uses: ashutoshvarma/setup-ninja@master
+
+      - name: Build Project
+        uses: threeal/cmake-action@v2.1.0
+        with:
+          args: -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build-configuration }}
+          c-compiler: ${{ matrix.config.cc }}
+          cxx-compiler: ${{ matrix.config.cxx }}
+
+      - name: Compress Build Directory
+        uses: thedoctor0/zip-release@0.7.5
+        with:
+          type: 'zip'
+          path: 'build'
+          filename: 'build.zip'
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build.zip
+          asset_name: ${{ matrix.config.os }}.zip
+          asset_content_type: application/zip

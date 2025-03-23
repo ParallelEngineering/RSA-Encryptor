@@ -9,7 +9,7 @@ on:
 
 jobs:
   debug:
-    name: Debug Build
+    name: Build
     runs-on: ${{ matrix.config.os }}
     strategy:
       matrix:
