@@ -54,14 +54,12 @@ int main(int argc, char* argv[]) {
           cli::help();
      }
 
-     //std::vector<uint8_t> num1 = operations::convertToVector(55555555);
-     //std::vector<uint8_t> num2 = operations::convertToVector(45678);
+     std::vector<uint8_t> num1 = operations::convertToVector(55555555);
+     std::vector<uint8_t> num2 = operations::convertToVector(45678);
 
      std::vector<std::uint8_t> result = operations::mul(num2, num1);
 
      std::cout << operations::isBigger(num1, num2) << std::endl;
-
-     std::vector<std::uint8_t> result2 = operations::mul(result, num3);
 
      // This prints out the result as a hex number
      for (auto it = result.rbegin(); it != result.rend(); ++it) {
