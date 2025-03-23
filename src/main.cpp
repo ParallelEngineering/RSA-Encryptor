@@ -57,13 +57,14 @@ int main(int argc, char* argv[]) {
      //std::vector<uint8_t> num1 = operations::convertToVector(55555555);
      //std::vector<uint8_t> num2 = operations::convertToVector(45678);
 
-     // 00010000 00000000 00000000 00000000
-     std::vector<uint8_t> num1 = {0b00000000, 0b00000000, 0b00000000, 0b00010000};
-     // 00000000 00000100 00000000 00000000
-     std::vector<uint8_t> num2 = {0b00000000, 0b00000000, 0b00000100};
+    std::vector<uint8_t> num1 = {11};
+    std::vector<uint8_t> num2 = {3};
 
-     std::vector<uint8_t> result = operations::mul(num1, num2);
-     std::cout << operations::isBigger(num1, num2) << std::endl;
+    std::vector<std::uint8_t> remainder;
+
+    std::vector<uint8_t> result = operations::div(num1, num2, remainder);
+
+    std::cout << "Remainder: " << remainder[0] << std::endl;
 
      // This prints out the result as a hex number
      for (auto it = result.rbegin(); it != result.rend(); ++it) {

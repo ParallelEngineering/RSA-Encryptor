@@ -267,7 +267,9 @@ namespace operations {
 
     [[nodiscard]] std::vector<std::uint8_t> div(
         const std::vector<std::uint8_t> dividend,
-        const std::vector<std::uint8_t> &divisor) noexcept {
+        const std::vector<std::uint8_t> &divisor,
+        std::vector<std::uint8_t> &remaining) noexcept
+{
         std::vector<std::uint8_t> quotient;
         std::uint8_t quotientBuffer = 0;
         std::uint16_t quotientBitIndex = 0;
@@ -301,6 +303,11 @@ namespace operations {
                  * digits are not supported */
                 if (dividendIndex < 0) {
                     quotientBuffer <<= 1;
+
+                    if (true) {
+                        remaining = dividendMask;
+                    }
+
                     break;
                 }
 
