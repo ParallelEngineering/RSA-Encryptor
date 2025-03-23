@@ -1,24 +1,19 @@
 #ifndef KEY_H
 #define KEY_H
 
-#include <iostream>
 #include <filesystem>
+#include <iostream>
 #include <map>
 #include <vector>
 
 #define KEY_FOLDER "rsa-keys"
 
-enum {
-    NONE,
-    PUBLIC,
-    PRIVATE,
-    BOTH
-};
+enum { NONE, PUBLIC, PRIVATE, BOTH };
 
 const char base64Chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 class key {
-private:
+   private:
     static std::filesystem::path keysPath();
     static int keyExists(std::string name);
     static void generatePublicFromPrivate();
@@ -33,11 +28,11 @@ private:
 
     static int createKey(std::vector<uint8_t> *keyPublic, std::vector<uint8_t> *keyPrivate);
 
-public:
+   public:
     static void createRSAKey();
 
-    static std::vector<uint8_t>* getPrivateKey(std::string &name);
-    static std::vector<uint8_t>* getPublicKey(std::string &name);
+    static std::vector<uint8_t> *getPrivateKey(std::string &name);
+    static std::vector<uint8_t> *getPublicKey(std::string &name);
 };
 
 #endif
