@@ -2,6 +2,8 @@
 # It builds the project on multiple operating systems (Ubuntu, Windows, and macOS) and
 # creates a pre-release.
 
+name: Create Release
+
 on:
   push:
     tags:

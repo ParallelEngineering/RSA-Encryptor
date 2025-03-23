@@ -1,6 +1,7 @@
 # This workflow should only be run by administrators
 
 name: ClangFormat correction
+
 on:
   workflow_dispatch:
 
