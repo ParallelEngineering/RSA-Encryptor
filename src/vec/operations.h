@@ -267,7 +267,9 @@ namespace operations {
 
     [[nodiscard]] std::vector<std::uint8_t> div(
         const std::vector<std::uint8_t> dividend,
-        const std::vector<std::uint8_t> &divisor) noexcept {
+        const std::vector<std::uint8_t> &divisor,
+        std::vector<std::uint8_t> *remaining = nullptr) noexcept
+{
         std::vector<std::uint8_t> quotient;
         std::uint8_t quotientBuffer = 0;
         std::uint16_t quotientBitIndex = 0;
@@ -289,6 +291,17 @@ namespace operations {
             }
 
             if (isEqual(dividendMask, divisor) || isBigger(dividendMask, divisor)) {
+
+                /* Stop the loop if the dividend is smaller than the divisor, because fractional
+                 * digits are not supported */
+                if (dividendIndex < 0) {
+                    quotientBuffer <<= 1;
+
+                    // If remaining pointer is passed, set the remaining value
+                    if (remaining != nullptr) *remaining = dividendMask;
+                    break;
+                }
+
                 // Shift the dividend and set the new bit as high
                 quotientBuffer <<= 1;
                 quotientBuffer++;
@@ -301,6 +314,9 @@ namespace operations {
                  * digits are not supported */
                 if (dividendIndex < 0) {
                     quotientBuffer <<= 1;
+
+                    // If remaining pointer is passed, set the remaining value
+                    if (remaining != nullptr) *remaining = dividendMask;
                     break;
                 }
 

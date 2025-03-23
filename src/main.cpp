@@ -54,22 +54,5 @@ int main(int argc, char* argv[]) {
           cli::help();
      }
 
-     //std::vector<uint8_t> num1 = operations::convertToVector(55555555);
-     //std::vector<uint8_t> num2 = operations::convertToVector(45678);
-
-     // 00010000 00000000 00000000 00000000
-     std::vector<uint8_t> num1 = {0b00000000, 0b00000000, 0b00000000, 0b00010000};
-     // 00000000 00000100 00000000 00000000
-     std::vector<uint8_t> num2 = {0b00000000, 0b00000000, 0b00000100};
-
-     std::vector<uint8_t> result = operations::mul(num1, num2);
-     std::cout << operations::isBigger(num1, num2) << std::endl;
-
-     // This prints out the result as a hex number
-     for (auto it = result.rbegin(); it != result.rend(); ++it) {
-          printf("%02X", *it);
-     }
-     std::cout << std::endl;
-
      return 0;
 }
