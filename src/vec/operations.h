@@ -45,13 +45,16 @@ namespace operations {
         const std::vector<std::uint8_t> &a,
         const std::vector<std::uint8_t> &b) noexcept
     {
-        const uint64_t iterations = a.size() > b.size() ? a.size() : b.size();
+        const std::uint32_t aSize = a.size();
+        const std::uint32_t bSize = b.size();
+        const std::uint64_t iterations = aSize > bSize ? aSize : bSize;
+
         // In case both numbers are the same length these variables could point ot the same vector
-        const std::vector<std::uint8_t> shortest = a.size() < b.size() ? a : b;
-        const std::vector<std::uint8_t> longest = a.size() > b.size() ? a : b;
+        const std::uint32_t shortest = aSize < bSize ? aSize : bSize;
+        const std::vector<std::uint8_t> longest = aSize > bSize ? a : b;
 
         for (uint64_t i = 0; i < iterations; i++) {
-            if (i >= shortest.size()) {
+            if (i >= shortest) {
                 if (longest[i] != 0) return false;
             } else {
                 if (a[i] != b[i]) return false;

@@ -58,6 +58,7 @@ int main(int argc, char* argv[]) {
      std::vector<uint8_t> num2 = operations::convertToVector(45678);
 
      std::vector<uint8_t> result = operations::mul(num1, num2);
+     std::cout << operations::isEqual(num1, num2) << std::endl;
 
      // This gives out the result as a hex number
      for (auto it = result.rbegin(); it != result.rend(); ++it) {
