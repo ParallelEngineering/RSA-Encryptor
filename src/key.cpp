@@ -13,10 +13,10 @@ std::filesystem::path key::keysPath() {
 
 int key::keyExists(std::string name) {
     // TODO fix function not case sensitive
-    /* 0: key doesn't exist
-     * 1: only publicKey exists
-     * 2: only privateKey exists
-     * 3: both keys exists */
+    // 0: key doesn't exist
+    // 1: only publicKey exists
+    // 2: only privateKey exists
+    // 3: both keys exists
     int status = NONE;
 
     std::filesystem::path keysFolder = keysPath();
