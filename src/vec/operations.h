@@ -271,6 +271,21 @@ namespace operations {
             result[i + bSize] += static_cast<std::uint8_t>(carry);
         }
 
+        // Remove any leading zeros.
+        auto firstNonZero = std::find_if(result.begin(), result.end(), [](std::uint8_t byte) 
+        {
+            return byte != 0;
+        });
+
+        if (firstNonZero != result.end())
+        {
+            return std::vector<std::uint8_t>(firstNonZero, result.end());
+        }
+        else
+        {
+            return {0};
+        }
+
         return result;
     }
 
