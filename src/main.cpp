@@ -57,8 +57,6 @@ int main(int argc, char* argv[]) {
      //std::vector<uint8_t> num1 = operations::convertToVector(55555555);
      //std::vector<uint8_t> num2 = operations::convertToVector(45678);
 
-     std::vector<std::uint8_t> result = operations::mul(num2, num1);
-
      // 00010000 00000000 00000000 00000000
      std::vector<uint8_t> num1 = {0b00000000, 0b00000000, 0b00000000, 0b00010000};
      // 00000000 00000100 00000000 00000000
