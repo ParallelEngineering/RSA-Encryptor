@@ -1,7 +1,9 @@
 #include "encryption.h"
 
-#include <cmath>
+std::vector<std::uint8_t> encryption::encrypt(const std::vector<std::uint8_t>& rawData,
+                                              const std::vector<std::uint8_t>& e,
+                                              const std::vector<std::uint8_t>& N) {
+    std::vector<std::uint8_t> encryptedData;
 
-std::int8_t encrypt(std::uint8_t data, unsigned long int e, unsigned long N) {
-    return std::pow(data, e);
+    return encryptedData;
 }

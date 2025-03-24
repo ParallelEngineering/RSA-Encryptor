@@ -5,9 +5,10 @@
 #include <iostream>
 
 class encryption {
-   private:
    public:
-    std::int8_t encrypt(std::uint8_t data, unsigned long int e, unsigned long N);
+    static std::vector<std::uint8_t> encrypt(const std::vector<std::uint8_t>& data,
+                                             const std::vector<std::uint8_t>& e,
+                                             const std::vector<std::uint8_t>& N);
 };
 
 #endif
