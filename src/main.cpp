@@ -42,6 +42,11 @@ int main(int argc, char* argv[]) {
             } else if (subFeature == "print" && argv[3] != nullptr) {
                 cli::keyManager::print(argv[3], arguments.publicKey, arguments.privateKey);
             }
+        } else if (feature == "encrypt" && argv[2] != nullptr) {
+            std::string fileName = argv[2];
+
+        } else if (feature == "decrypt" && argv[2] != nullptr) {
+            std::string fileName = argv[2];
 
         } else if (feature == "help") {
             cli::help();
