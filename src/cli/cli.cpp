@@ -1,10 +1,15 @@
 #include "cli.h"
 
+#include <filesystem>
 #include <iostream>
 
-#include "key.h"
+#include "../rsa/key.h"
+
+using std::filesystem::path;
 
 void cli::help() { std::cout << "Welcome to RSA-Encryptor" << std::endl; }
+
+void cli::encrypt(std::string fileName) {}
 
 void cli::keyManager::create() { key::createRSAKey(); }
 

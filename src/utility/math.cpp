@@ -1,15 +1,15 @@
-#include "utility.h"
+#include "math.h"
 
-int utility::gcd(int a, int b) {
+int math::gcd(int a, int b) {
     if (a == 0) {
         return b;
     }
     return gcd(b % a, a);
 }
 
-int utility::phi(int a, int b) { return ((a - 1) * (b - 1)); }
+int math::phi(int a, int b) { return ((a - 1) * (b - 1)); }
 
-bool utility::checkForPrime(int number) {
+bool math::checkForPrime(int number) {
     int counter = 0;
     if (number <= 1) {
         return false;

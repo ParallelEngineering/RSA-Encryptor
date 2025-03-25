@@ -1,6 +1,6 @@
 #include "encryption.h"
 
-#include "vec/operations.h"
+#include "../vec/operations.h"
 
 std::vector<std::uint8_t> encryption::encrypt(const std::vector<std::uint8_t>& rawData,
                                               const std::vector<std::uint8_t>& e,

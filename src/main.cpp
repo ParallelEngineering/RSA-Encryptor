@@ -1,12 +1,6 @@
-#include <algorithm>
-#include <cstdint>
 #include <cstring>
-#include <iostream>
-#include <vector>
 
-#include "cli.h"
-#include "key.h"
-#include "utility.h"
+#include "cli/cli.h"
 
 int main(int argc, char* argv[]) {
     struct {
