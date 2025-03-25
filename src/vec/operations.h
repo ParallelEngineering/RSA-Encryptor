@@ -52,7 +52,7 @@ namespace operations {
         result.push_back((currentByte << 1) + mostSignificantBit);
 
         // Check if the most significant bit of the current byte is set
-        mostSignificantBit = currentByte & 0b1000000 == 0b10000000;
+        mostSignificantBit = (currentByte & 0b1000000) == 0b10000000;
     }
 
     // In case the length of the vector and the actual number length matches, the numberincreases by
@@ -194,16 +194,17 @@ namespace operations {
     return result;
 }
 
-[[nodiscard]] std::vector<std::uint8_t> convertToVector(std::uint64_t number) noexcept {
-    std::vector<std::uint8_t> result;
+[[nodiscard]] std::uint64_t vectorToInt(std::vector<std::uint8_t> number) noexcept {
+    std::uint64_t result = 0;
 
-    // Loop until the whole number is zero
-    while (number) {
-        // We only care for the lsb
-        result.push_back(static_cast<std::uint8_t>(number & 0xFF));
+    // check if the number fits into 64bits
+    if (isBigger(number, {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF})) {
+        std::cerr << "Error: Number is too big to fit into 64 bits." << std::endl;
+        return 0;
+    }
 
-        // Shift the number by 8 to the right
-        number >>= 8;
+    for (int i = 0; i < number.size(); i++) {
+        result += std::pow(number[i], i);
     }
 
     return result;
@@ -242,8 +243,8 @@ namespace operations {
     return result;
 }
 
-[[nodiscard]] std::vector<std::uint8_t> div(
-    const std::vector<std::uint8_t> dividend, const std::vector<std::uint8_t> &divisor,
+std::vector<std::uint8_t> div(
+    const std::vector<std::uint8_t> &dividend, const std::vector<std::uint8_t> &divisor,
     std::vector<std::uint8_t> *remaining = nullptr) noexcept {
     std::vector<std::uint8_t> quotient;
     std::uint8_t quotientBuffer = 0;
@@ -316,13 +317,13 @@ namespace operations {
 }
 
 [[nodiscard]] std::vector<std::uint8_t> pow(const std::vector<std::uint8_t> &a,
-                                            const std::uint64_t &pow) noexcept {
+                                            const std::vector<std::uint8_t> &pow) noexcept {
     // Copy the value from a into result while keeping a constant
     std::vector<std::uint8_t> result;
     std::copy(a.begin(), a.end(), std::back_inserter(result));
 
     // Start the loop at 1, because the first number is already assigned to result
-    for (std::uint32_t i = 1; i < pow; i++) {
+    for (std::uint32_t i = 1; i < vectorToInt(pow); i++) {
         result = mul(result, a);
     }
 
