@@ -7,7 +7,6 @@
 #include "cli.h"
 #include "key.h"
 #include "utility.h"
-#include "vec/operations.h"
 
 int main(int argc, char* argv[]) {
     struct {
@@ -43,7 +42,7 @@ int main(int argc, char* argv[]) {
                 cli::keyManager::print(argv[3], arguments.publicKey, arguments.privateKey);
             }
         } else if (feature == "encrypt" && argv[2] != nullptr) {
-            std::string fileName = argv[2];
+            cli::encrypt(argv[2]);
 
         } else if (feature == "decrypt" && argv[2] != nullptr) {
             std::string fileName = argv[2];
