@@ -110,6 +110,12 @@ namespace operations {
     return false;
 }
 
+[[nodiscard]] bool isStraight(const std::vector<std::uint8_t> &a) noexcept {
+
+
+    return false;
+}
+
 [[nodiscard]] std::vector<std::uint8_t> add(const std::vector<std::uint8_t> &a,
                                             const std::vector<std::uint8_t> &b) noexcept {
     // Time complexity O(iterations)
@@ -243,9 +249,9 @@ namespace operations {
     return result;
 }
 
-std::vector<std::uint8_t> div(
-    const std::vector<std::uint8_t> &dividend, const std::vector<std::uint8_t> &divisor,
-    std::vector<std::uint8_t> *remaining = nullptr) noexcept {
+std::vector<std::uint8_t> div(const std::vector<std::uint8_t> &dividend,
+                              const std::vector<std::uint8_t> &divisor,
+                              std::vector<std::uint8_t> *remaining = nullptr) noexcept {
     std::vector<std::uint8_t> quotient;
     std::uint8_t quotientBuffer = 0;
     std::uint16_t quotientBitIndex = 0;
@@ -316,6 +322,17 @@ std::vector<std::uint8_t> div(
     return quotient;
 }
 
+[[nodiscard]] std::vector<std::uint8_t> square(const std::vector<std::uint8_t> &a) noexcept {
+    std::vector<std::uint8_t> result;
+
+    for (std::uint8_t byte : result) {
+        // TODO bit manipulation
+        // 0b00000111 * 0b00000111 = 0b00101010
+    }
+
+    return result;
+}
+
 [[nodiscard]] std::vector<std::uint8_t> pow(const std::vector<std::uint8_t> &a,
                                             const std::vector<std::uint8_t> &pow) noexcept {
     // Copy the value from a into result while keeping a constant
@@ -328,6 +345,35 @@ std::vector<std::uint8_t> div(
     }
 
     return result;
+}
+
+// This calculates a^b mod m in a more efficient way
+[[nodiscard]] std::vector<std::uint8_t> exponentiationBySquaring(
+    const std::vector<std::uint8_t> &a, std::vector<std::uint8_t> b,
+    const std::vector<std::uint8_t> &m) {
+
+    // Check if the function call is valid, when the exponent is bigger at least 2
+    if (!isBigger(b, {2})) {
+        return a;
+    }
+
+    // If the cant get lower, end the recursion
+    if (isEqual(b, {2})) {
+        return mul(a, a);
+    } else if (isStraight(a)) {
+        const std::vector<std::uint8_t> value = exponentiationBySquaring(a, div(b, {2}), m);
+        return square(value);
+    } else {
+        // Subtract one from the exponent to make it straight
+        b = sub(b, {1});
+
+        const std::vector<std::uint8_t> value = exponentiationBySquaring(a, div(b, {2}), m);
+
+        // Multiply by the subtracted exponent
+        return mul(square(value), b);
+    }
+
+    return {0};
 }
 }  // namespace operations
 
