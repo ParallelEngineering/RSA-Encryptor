@@ -15,6 +15,19 @@ int main(int argc, char* argv[]) {
         bool publicKey = false;
     } arguments;
 
+    using operations::Base256;
+    Base256 a1(1);
+
+    Base256 data1(400);
+    Base256 data2(400);
+    Base256 result(800);
+
+    data2 += result;
+
+    std::cout << a1.isEqual(data2, result) << std::endl;
+
+
+
     // Check if there are additional arguments
     if (argc > 1) {
         // Check for additional arguments
