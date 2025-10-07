@@ -166,26 +166,32 @@ class Base256 {
         add(rhs.data);
     }
 
-
     Base256& operator+=(const Base256& rhs) {
-        add(rhs);        // mutates *this->vec_
-        return *this;    // return LHS by reference for chaining
+        add(rhs);
+        return *this;
     }
 
+    void sub(const Base256& rhs) {
+        sub(rhs.data);
+    }
+
+    Base256& operator-=(const Base256& rhs) {
+        sub(rhs);
+        return *this;
+    }
 
     // The return value can only be positive, if it would be negative, 0 is returned
-    [[nodiscard]] std::vector<std::uint8_t> sub(const std::vector<std::uint8_t> &a,
-                                                const std::vector<std::uint8_t> &b) noexcept {
+    void sub(const std::vector<std::uint8_t> &b) noexcept {
         // Prevent from ending the subtraction before going over the hole subtractor and stop if the
         // result can only be negative
-        if (getStartBitIndex(b) > getStartBitIndex(a)) return {0};
+        if (getStartBitIndex(b) > getStartBitIndex(data)) throw std::invalid_argument("Invalid base256 index");
 
         std::vector<std::uint8_t> result;
 
         // Handle an underflow when subtracting
         bool borrow = false;
 
-        for (int i = 0; i < a.size(); i++) {
+        for (int i = 0; i < data.size(); i++) {
             std::int32_t subtract;
             // Check for the end of the subtractor
             if (i >= b.size()) {
@@ -195,9 +201,9 @@ class Base256 {
             }
             borrow = false;
 
-            if (a[i] >= subtract) {
+            if (data[i] >= subtract) {
                 // If the current number is as least as big as subtract
-                std::uint8_t number = a[i] - subtract;
+                std::uint8_t number = data[i] - subtract;
                 result.push_back(number);
             } else {
                 // Borrow from the next number
@@ -205,12 +211,12 @@ class Base256 {
                 borrow = true;
 
                 // Here subtract can only be 0 or negative
-                std::uint8_t number = a[i] - subtract;
+                std::uint8_t number = data[i] - subtract;
                 result.push_back(number);
             }
         }
 
-        return result;
+        data = std::move(result);
     }
 
     [[nodiscard]] std::vector<std::uint8_t> convertToVector(std::uint64_t number) noexcept {
@@ -228,10 +234,18 @@ class Base256 {
         return result;
     }
 
-    [[nodiscard]] std::vector<std::uint8_t> mul(const std::vector<std::uint8_t> &a,
-                                                const std::vector<std::uint8_t> &b) noexcept {
+    void mul(const Base256& rhs) {
+        mul(rhs.data);
+    }
+
+    Base256& operator*=(const Base256& rhs) {
+        mul(rhs);
+        return *this;
+    }
+
+    void mul(const std::vector<std::uint8_t> &b) noexcept {
         // Time complexity O(aSize * bSize)
-        const std::uint64_t aSize = a.size();
+        const std::uint64_t aSize = data.size();
         const std::uint64_t bSize = b.size();
 
         // Initialize the result vector with zeros, with the size of aSize + bSize
@@ -244,7 +258,7 @@ class Base256 {
             for (uint64_t x = 0; x < bSize; x++) {
                 // Calculate the product by adding up the previous result, the carry, and the new
                 // product
-                std::uint16_t product = result[i + x] + carry + (a[i] * b[x]);
+                std::uint16_t product = result[i + x] + carry + (data[i] * b[x]);
 
                 // Calculate the carry which is the overflow beyond 255
                 carry = product >> 8;
@@ -258,7 +272,7 @@ class Base256 {
             result[i + bSize] += static_cast<std::uint8_t>(carry);
         }
 
-        return result;
+        data = std::move(result);
     }
 
     [[nodiscard]] std::vector<std::uint8_t> div(
@@ -299,7 +313,8 @@ class Base256 {
                 quotientBuffer++;
                 quotientBitIndex++;
 
-                dividendMask = sub(dividendMask, divisor);
+                // TODO
+                //dividendMask = sub(dividendMask, divisor);
                 dividendMask = addBitFromNumber(dividendMask, dividend, dividendIndex--);
             } else {
                 // Stop the loop if the dividend is smaller than the divisor, because fractional
@@ -343,7 +358,8 @@ class Base256 {
 
         // Start the loop at 1, because the first number is already assigned to result
         for (std::uint32_t i = 1; i < pow; i++) {
-            result = mul(result, a);
+            // TODO
+            //result = mul(result, a);
         }
 
         return result;
