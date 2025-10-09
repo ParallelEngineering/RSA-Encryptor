@@ -5,4 +5,5 @@ add_executable(RSA-Encryptor
         encryption.cpp
         cli.cpp
         vec/operations.cpp
+        vec/helper.h
 )

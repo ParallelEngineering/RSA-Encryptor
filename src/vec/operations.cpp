@@ -2,6 +2,49 @@
 
 #include <algorithm>
 
+void operations::Base256::add(const std::vector<std::uint8_t> &b) noexcept {
+    // Time complexity O(iterations)
+    // Initialize the result vector to store the sum
+    std::vector<std::uint8_t> result;
+
+    // Get the max iterations based on the largest vector
+    const int iterations = std::max(data.size(), b.size());
+
+    // Carry to handle overflow between bytes
+    std::uint16_t carry = 0;
+
+    for (int i = 0; i < iterations; i++) {
+        // Set up a holder for the sum
+        std::uint16_t sum = carry;
+
+        // Only add to sum if we actually have a value in a
+        if (i < data.size()) {
+            sum += data[i];
+        }
+
+        // Only add to sum if we actually have a value in b
+        if (i < b.size()) {
+            sum += b[i];
+        }
+
+        // Calculate the carry which is the overflow beyond 255
+        carry = sum >> 8;
+
+        // Clear out everything except the lsb
+        sum &= 0xFF;
+
+        // Append the least significant byte of the sum to the result
+        result.push_back(static_cast<std::uint8_t>(sum));
+    }
+
+    // If we got a carry we append this as well
+    if (carry) {
+        result.push_back(static_cast<std::uint8_t>(carry));
+    }
+
+    data = std::move(result);
+}
+
 [[nodiscard]] std::vector<std::uint8_t> operations::Base256::sub(
     const std::vector<std::uint8_t> &a, const std::vector<std::uint8_t> &b) noexcept {
     // Prevent from ending the subtraction before going over the hole subtractor and stop if the
@@ -39,6 +82,19 @@
     }
 
     return result;
+}
+
+// The return value can only be positive, if it would be negative, 0 is returned
+void operations::Base256::sub(const std::vector<std::uint8_t> &b) noexcept {
+    // Prevent from ending the subtraction before going over the hole subtractor and stop if the
+    // result can only be negative
+    if (getStartBitIndex(b) > getStartBitIndex(data)) {
+        std::cerr << "Invalid base256 index" << std::endl;
+    }
+
+    std::vector<std::uint8_t> result = sub(data, b);
+
+    data = std::move(result);
 }
 
 void operations::Base256::mul(const std::vector<std::uint8_t> &b) noexcept {
@@ -146,24 +202,9 @@ void operations::Base256::div(const std::vector<std::uint8_t> &divisor,
     data = std::move(quotient);
 }
 
-[[nodiscard]] std::vector<std::uint8_t> operations::Base256::convertToVector(std::uint64_t number) noexcept {
-    std::vector<std::uint8_t> result;
-
-    // Loop until the whole number is zero
-    while (number) {
-        // We only care for the lsb
-        result.push_back(static_cast<std::uint8_t>(number & 0xFF));
-
-        // Shift the number by 8 to the right
-        number >>= 8;
-    }
-
-    return result;
-}
-
 [[nodiscard]] std::vector<std::uint8_t> operations::Base256::pow(
     const std::vector<std::uint8_t> &a, const std::uint64_t &pow) noexcept {
-    // Copy the value from a into result while keeping a constant
+    // Copy the value from an into result while keeping a constant
     std::vector<std::uint8_t> result;
     std::copy(a.begin(), a.end(), std::back_inserter(result));
 

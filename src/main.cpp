@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
 
     data2 -= data1;
 
-    std::cout << a1.isEqual(data2, result) << std::endl;
+    std::cout << (data2 == result) << std::endl;
 
     // Check if there are additional arguments
     if (argc > 1) {
