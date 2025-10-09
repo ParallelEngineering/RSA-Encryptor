@@ -18,9 +18,9 @@ int main(int argc, char* argv[]) {
     using operations::Base256;
     Base256 a1(1);
 
-    Base256 data1(200);
+    Base256 data1(100);
     Base256 data2(400);
-    Base256 result(200);
+    Base256 result(300);
 
     data2 -= data1;
 
