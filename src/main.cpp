@@ -16,15 +16,14 @@ int main(int argc, char* argv[]) {
     } arguments;
 
     using operations::Base256;
-    Base256 a1(1);
 
     Base256 data1(100);
     Base256 data2(400);
-    Base256 result(300);
+    Base256 result(0);
 
-    data2 -= data1;
+    result = data1 + data2;
 
-    std::cout << (data2 == result) << std::endl;
+    std::cout << (result == Base256(500)) << std::endl;
 
     // Check if there are additional arguments
     if (argc > 1) {

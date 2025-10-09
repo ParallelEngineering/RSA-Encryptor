@@ -17,6 +17,10 @@ class Base256 {
         data = convertToVector(initalValue);
     }
 
+    Base256(const Base256& base256) {
+        data = base256.data;
+    }
+
     void add(const std::vector<std::uint8_t> &b) noexcept;
     void sub(const std::vector<std::uint8_t> &b) noexcept;
     std::vector<std::uint8_t> sub(const std::vector<std::uint8_t> &a,
@@ -28,9 +32,29 @@ class Base256 {
     std::vector<std::uint8_t> pow(const std::vector<std::uint8_t> &a,
                                                 const std::uint64_t &pow) noexcept;
 
+    Base256& operator=(const Base256& other) {
+        // We protect us from self assignment
+        if (this != &other) {
+            data = other.data;
+        }
+        return *this;
+    }
+
+    friend Base256 operator+(const Base256 &rhs, const Base256 &lhs) {
+        Base256 result(rhs);
+        result += lhs;
+        return result;
+    }
+
     Base256 &operator+=(const Base256 &rhs) {
         add(rhs.data);
         return *this;
+    }
+
+    friend Base256 operator-(const Base256 &rhs, const Base256 &lhs) {
+        Base256 result(rhs);
+        result -= lhs;
+        return result;
     }
 
     Base256 &operator-=(const Base256 &rhs) {
@@ -38,9 +62,21 @@ class Base256 {
         return *this;
     }
 
+    friend Base256 operator*(const Base256 &rhs, const Base256 &lhs) {
+        Base256 result(rhs);
+        result *= lhs;
+        return result;
+    }
+
     Base256 &operator*=(const Base256 &rhs) {
         mul(rhs.data);
         return *this;
+    }
+
+    friend Base256 operator/(const Base256 &rhs, const Base256 &lhs) {
+        Base256 result(rhs);
+        result /= lhs;
+        return result;
     }
 
     Base256 &operator/=(const Base256 &rhs) {
