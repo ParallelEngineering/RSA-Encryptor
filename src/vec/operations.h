@@ -3,8 +3,6 @@
 
 #include <cstdint>
 #include <iostream>
-#include <ostream>
-#include <stdexcept>
 #include <vector>
 
 #include "helper.h"
@@ -13,12 +11,16 @@ namespace operations {
 class Base256 {
    public:
 
-    explicit Base256(const std::uint64_t initalValue) {
-        data = convertToVector(initalValue);
+    Base256(const std::uint64_t initialValue) {
+        data = convertToVector(initialValue);
     }
 
     Base256(const Base256& base256) {
         data = base256.data;
+    }
+
+    Base256() {
+        data = convertToVector(0);
     }
 
     void add(const std::vector<std::uint8_t> &b) noexcept;
@@ -35,7 +37,7 @@ class Base256 {
     Base256& operator=(const Base256& other) {
         // We protect us from self assignment
         if (this != &other) {
-            data = other.data;
+            data = std::move(other.data);
         }
         return *this;
     }
@@ -90,6 +92,22 @@ class Base256 {
 
     [[nodiscard]] friend bool operator!=(const Base256& lhs, const Base256& rhs) {
         return !isEqual(lhs.data, rhs.data);
+    }
+
+    [[nodiscard]] friend bool operator>(const Base256& lhs, const Base256& rhs) {
+        return isBigger(lhs.data, rhs.data);
+    }
+
+    [[nodiscard]] friend bool operator<(const Base256& lhs, const Base256& rhs) {
+        return !isBigger(lhs.data, rhs.data);
+    }
+
+    [[nodiscard]] friend bool operator>=(const Base256& lhs, const Base256& rhs) {
+        return !isBigger(rhs.data, lhs.data);
+    }
+
+    [[nodiscard]] friend bool operator<=(const Base256& lhs, const Base256& rhs) {
+        return !isBigger(lhs.data, rhs.data);
     }
 
    private:

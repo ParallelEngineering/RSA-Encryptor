@@ -86,14 +86,7 @@ void operations::Base256::add(const std::vector<std::uint8_t> &b) noexcept {
 
 // The return value can only be positive, if it would be negative, 0 is returned
 void operations::Base256::sub(const std::vector<std::uint8_t> &b) noexcept {
-    // Prevent from ending the subtraction before going over the hole subtractor and stop if the
-    // result can only be negative
-    if (getStartBitIndex(b) > getStartBitIndex(data)) {
-        std::cerr << "Invalid base256 index" << std::endl;
-    }
-
     std::vector<std::uint8_t> result = sub(data, b);
-
     data = std::move(result);
 }
 

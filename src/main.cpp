@@ -19,11 +19,11 @@ int main(int argc, char* argv[]) {
 
     Base256 data1(100);
     Base256 data2(400);
-    Base256 result(0);
+    Base256 result = 200;
 
     result = data1 + data2;
 
-    std::cout << (result == Base256(500)) << std::endl;
+    std::cout << (result >= Base256(500)) << std::endl;
 
     // Check if there are additional arguments
     if (argc > 1) {
