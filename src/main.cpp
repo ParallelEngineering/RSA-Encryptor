@@ -19,6 +19,8 @@ int main(int argc, char* argv[]) {
 
     Base256 data1(100);
     Base256 data2(400);
+
+    data2.print();
     Base256 result = 200;
 
     result = data1 + data2;

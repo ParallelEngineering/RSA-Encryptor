@@ -34,10 +34,19 @@ class Base256 {
     std::vector<std::uint8_t> pow(const std::vector<std::uint8_t> &a,
                                                 const std::uint64_t &pow) noexcept;
 
+    void print() const {
+        std::uint64_t value = 0;
+        // Reconstruct assuming big-endian: data[0] is most significant byte
+        for (std::uint8_t byte : data) {
+            value = (value << 8) | static_cast<std::uint64_t>(byte);
+        }
+        std::cout << value << '\n';
+    }
+
     Base256& operator=(const Base256& other) {
         // We protect us from self assignment
         if (this != &other) {
-            data = std::move(other.data);
+            data = other.data;
         }
         return *this;
     }

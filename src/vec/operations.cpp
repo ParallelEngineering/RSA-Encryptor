@@ -49,7 +49,10 @@ void operations::Base256::add(const std::vector<std::uint8_t> &b) noexcept {
     const std::vector<std::uint8_t> &a, const std::vector<std::uint8_t> &b) noexcept {
     // Prevent from ending the subtraction before going over the hole subtractor and stop if the
     // result can only be negative
-    if (getStartBitIndex(b) > getStartBitIndex(a)) return {0};
+    if (getStartBitIndex(b) > getStartBitIndex(a)) {
+        std::cout << "bonjour" << std::endl;
+        return {0};
+    }
 
     std::vector<std::uint8_t> result;
 
