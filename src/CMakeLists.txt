@@ -4,37 +4,35 @@ project(RSA-Encryptor CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Enable testing early
-include(CTest)          # defines BUILD_TESTING (ON by default) and enable_testing()
+include(CTest)
 
-# --- Catch2 via FetchContent ---
+# Catch2 via FetchContent
 include(FetchContent)
 FetchContent_Declare(
         Catch2
         GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-        GIT_TAG v3.6.0
+        GIT_TAG v3.11.0
 )
 FetchContent_MakeAvailable(Catch2)
 
-# Tell CMake where to find Catch2's CMake helpers (Catch.cmake)
-# (Required when Catch2 is brought in via FetchContent and not installed system-wide)
+# Find Catch 2 CMakeList
 list(APPEND CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/extras)
-include(Catch)  # provides catch_discover_tests()
+include(Catch)
 
-# --- Your core library (shared between app and tests) ---
-add_library(rsa_core
+# Core library
+add_library(RSA-Core
         utility.cpp
         key.cpp
         encryption.cpp
         vec/operations.cpp
 )
-target_include_directories(rsa_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(RSA-Core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-# --- Main app ---
+# RSA-Encryptor Main
 add_executable(RSA-Encryptor main.cpp cli.cpp)
-target_link_libraries(RSA-Encryptor PRIVATE rsa_core)
+target_link_libraries(RSA-Encryptor PRIVATE RSA-Core)
 
-# --- Tests ---
+# Tests
 if(BUILD_TESTING)
     add_executable(RSA-Encryptor-Tests
             tests/test_base256.cpp
@@ -42,12 +40,11 @@ if(BUILD_TESTING)
     target_include_directories(RSA-Encryptor-Tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
     target_link_libraries(RSA-Encryptor-Tests
             PRIVATE
-            rsa_core
+            RSA-Core
             Catch2::Catch2WithMain
     )
 
-    # For single-config generators (Make/Ninja), this “just works”.
-    # For multi-config (VS/Xcode), use: ctest -C Debug
+    # TODO inspect single config generators and multi config generators
     catch_discover_tests(RSA-Encryptor-Tests
             TEST_PREFIX base256:
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
