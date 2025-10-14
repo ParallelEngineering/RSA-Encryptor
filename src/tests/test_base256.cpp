@@ -1,8 +1,6 @@
-// Catch2 v3: use the macros-only header to keep compile times down
 #include <catch2/catch_test_macros.hpp>
 #include <cstdint>
 
-// Adjust include path to match your project structure:
 #include "vec/operations.h"
 
 using operations::Base256;
