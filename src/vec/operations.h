@@ -36,9 +36,9 @@ class Base256 {
 
     void print() const {
         std::uint64_t value = 0;
-        // Reconstruct assuming big-endian: data[0] is most significant byte
-        for (std::uint8_t byte : data) {
-            value = (value << 8) | static_cast<std::uint64_t>(byte);
+        // Vector stores data natively as little-endian, iterate using reverse iterator
+        for (auto it = data.rbegin(); it != data.rend(); ++it) {
+            value = (value << 8) | static_cast<std::uint64_t>(*it);
         }
         std::cout << value << '\n';
     }
@@ -108,7 +108,7 @@ class Base256 {
     }
 
     [[nodiscard]] friend bool operator<(const Base256& lhs, const Base256& rhs) {
-        return !isBigger(lhs.data, rhs.data);
+        return isBigger(rhs.data, lhs.data);
     }
 
     [[nodiscard]] friend bool operator>=(const Base256& lhs, const Base256& rhs) {

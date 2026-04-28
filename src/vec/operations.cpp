@@ -42,17 +42,16 @@ void operations::Base256::add(const std::vector<std::uint8_t> &b) noexcept {
         result.push_back(static_cast<std::uint8_t>(carry));
     }
 
+    // Strip mathematical leading zeros (trailing in little-endian representation)
+    while (result.size() > 1 && result.back() == 0) {
+        result.pop_back();
+    }
+
     data = std::move(result);
 }
 
 [[nodiscard]] std::vector<std::uint8_t> operations::Base256::sub(
     const std::vector<std::uint8_t> &a, const std::vector<std::uint8_t> &b) noexcept {
-    // Prevent from ending the subtraction before going over the hole subtractor and stop if the
-    // result can only be negative
-    if (getStartBitIndex(b) > getStartBitIndex(a)) {
-        std::cout << "bonjour" << std::endl;
-        return {0};
-    }
 
     std::vector<std::uint8_t> result;
 
@@ -82,6 +81,11 @@ void operations::Base256::add(const std::vector<std::uint8_t> &b) noexcept {
             std::uint8_t number = a[i] - subtract;
             result.push_back(number);
         }
+    }
+
+    // Strip trailing zeroes to normalize
+    while (result.size() > 1 && result.back() == 0) {
+        result.pop_back();
     }
 
     return result;
@@ -122,78 +126,65 @@ void operations::Base256::mul(const std::vector<std::uint8_t> &b) noexcept {
         result[i + bSize] += static_cast<std::uint8_t>(carry);
     }
 
+    // Since aSize + bSize typically provides extra buffering, normalise the number safely
+    while (result.size() > 1 && result.back() == 0) {
+        result.pop_back();
+    }
+
     data = std::move(result);
 }
 
 void operations::Base256::div(const std::vector<std::uint8_t> &divisor,
                               std::vector<std::uint8_t> *remaining) noexcept {
-    std::vector<std::uint8_t> quotient;
-    std::uint8_t quotientBuffer = 0;
-    std::uint16_t quotientBitIndex = 0;
+    if (isZero(divisor)) {
+        data = {0};
+        if (remaining != nullptr) *remaining = {0};
+        return;
+    }
 
-    // The index of the last bit in the dividendMask inside dividend
-    std::int64_t dividendIndex = getStartBitIndex(data);
-    // This copy's the most significant bit of the dividend
+    std::int64_t initialDividendIndex = getStartBitIndex(data);
+    if (initialDividendIndex < 0) {
+        if (remaining != nullptr) *remaining = {0};
+        data = {0};
+        return;
+    }
+
+    // Vector preallocated to support max potential bits mapped by initial index
+    std::vector<std::uint8_t> quotient((initialDividendIndex / 8) + 1, 0);
+
+    std::int64_t dividendIndex = initialDividendIndex;
     std::vector<std::uint8_t> dividendMask = addBitFromNumber({0}, data, dividendIndex--);
 
     while (dividendIndex >= -1) {
-        if (quotientBitIndex > 7) {
-            // The quotient is stored from the most significant byte to the least significant
-            // byte, in contrast to all the other vector based numbers.
-            // Which is later reversed, at the end of the function.
-            quotient.push_back(quotientBuffer);
-            quotientBuffer = 0;
-            quotientBitIndex = 0;
-        }
+        // Evaluate mathematical power index representing current bit generated
+        std::int64_t currentQBitIndex = dividendIndex + 1;
 
         if (isEqual(dividendMask, divisor) || isBigger(dividendMask, divisor)) {
-            // Stop the loop if the dividend is smaller than the divisor, because fractional
-            // digits are not supported
-            if (dividendIndex < 0) {
-                quotientBuffer <<= 1;
+            // Drop evaluating bit immediately at explicitly targeted position inside quotient
+            quotient[currentQBitIndex / 8] |= (1 << (currentQBitIndex % 8));
 
-                // If remaining pointer is passed, set the remaining value
-                if (remaining != nullptr) *remaining = dividendMask;
+            if (dividendIndex < 0) {
+                if (remaining != nullptr) *remaining = sub(dividendMask, divisor);
                 break;
             }
-
-            // Shift the dividend and set the new bit as high
-            quotientBuffer <<= 1;
-            quotientBuffer++;
-            quotientBitIndex++;
 
             dividendMask = sub(dividendMask, divisor);
             dividendMask = addBitFromNumber(dividendMask, data, dividendIndex--);
         } else {
-            // Stop the loop if the dividend is smaller than the divisor, because fractional
-            // digits are not supported
             if (dividendIndex < 0) {
-                quotientBuffer <<= 1;
-
-                // If remaining pointer is passed, set the remaining value
                 if (remaining != nullptr) *remaining = dividendMask;
                 break;
             }
 
-            // if the divisor is bigger than the dividend, we need to shift the dividend and set
-            // the new bit as low
-            quotientBuffer <<= 1;
-            quotientBitIndex++;
-
-            // Stop the loop if the dividend is smaller than the divisor, because fractional
-            // digits are not supported
-            if (dividendIndex < 0) break;
-
-            // Because dividendMask is smaller than divisor, we add the next bit from the
-            // dividend
             dividendMask = addBitFromNumber(dividendMask, data, dividendIndex--);
         }
     }
 
-    if (quotientBuffer != 0) quotient.push_back(quotientBuffer);
-
-    // Reverse the quotient
-    std::reverse(quotient.begin(), quotient.end());
+    // Strip trailing normalization zeros (empty space buffers) securely
+    while (quotient.size() > 1 && quotient.back() == 0) {
+        quotient.pop_back();
+    }
+    if (quotient.empty()) quotient.push_back(0);
 
     data = std::move(quotient);
 }

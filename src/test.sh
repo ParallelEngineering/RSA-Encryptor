@@ -2,9 +2,11 @@
 set -euo pipefail
 
 BUILD_DIR="build"
+FETCH_DIR="$BUILD_DIR/_deps"
 
-echo "Cleaning build dir to avoid stale FetchContent deps"
-rm -rf "$BUILD_DIR"
+echo "Cleaning only FetchContent deps to avoid stale dependencies"
+# Remove only the FetchContent directory, not the entire build
+rm -rf "$FETCH_DIR"
 
 echo "Configuring (Debug, tests ON, Clang, Unix Makefiles)"
 cmake -S . -B "$BUILD_DIR" -G "Unix Makefiles" \

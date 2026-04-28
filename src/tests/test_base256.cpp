@@ -101,7 +101,6 @@ TEST_CASE("Base256: subtraction") {
         REQUIRE(make(123456) - make(0) == make(123456));
     }
 
-    // NOTE: If your implementation allows negative results, define behavior.
     // Many big-int libs clamp or assume a >= b. Here we skip a<b cases.
 }
 
@@ -154,8 +153,10 @@ TEST_CASE("Base256: mixed expressions") {
         for (uint64_t a = 1; a <= 50; ++a)
             for (uint64_t b = 1; b <= 50; ++b)
                 for (uint64_t c = 1; c <= 50; ++c) {
-                    Base256 expr = (make(a) + make(b)) * make(c);
-                    REQUIRE(expr / make(c) == make(a) + make(b));
+                    Base256 additionResult = make(a) + make(b);
+                    Base256 expr = additionResult * make(c);
+                    Base256 divisionResult = expr / make(c);
+                    REQUIRE(divisionResult == additionResult);
                 }
     }
 }
@@ -180,7 +181,7 @@ TEST_CASE("Base256: comparisons") {
         REQUIRE_FALSE(x != y);
 
         // Strictness: x < x must be false, x <= x must be true
-        REQUIRE_FALSE(x < x);       // <-- this will FAIL with your current operator<
+        REQUIRE_FALSE(x < x);
         REQUIRE(x <= x);
         REQUIRE_FALSE(x > x);
         REQUIRE(x >= x);
