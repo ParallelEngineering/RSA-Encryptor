@@ -1,9 +1,15 @@
 cmake_minimum_required(VERSION 3.20)
 project(RSA-Encryptor CXX)
 
+# Enforce C++20 and disable compiler-specific extensions
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Prevent CMake from re-downloading Catch2 every time CLion reloads
+set(FETCHCONTENT_UPDATES_DISCONNECTED ON CACHE BOOL "Don't update FetchContent on every config" FORCE)
+
+# include(CTest) automatically sets BUILD_TESTING to ON by default
 include(CTest)
 
 # Catch2 via FetchContent
@@ -44,7 +50,6 @@ if(BUILD_TESTING)
             Catch2::Catch2WithMain
     )
 
-    # TODO inspect single config generators and multi config generators
     catch_discover_tests(RSA-Encryptor-Tests
             TEST_PREFIX base256:
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
