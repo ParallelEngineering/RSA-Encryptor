@@ -39,7 +39,7 @@ add_executable(RSA-Encryptor main.cpp cli.cpp)
 target_link_libraries(RSA-Encryptor PRIVATE RSA-Core)
 
 # Tests
-if(BUILD_TESTING)
+if (BUILD_TESTING)
     add_executable(RSA-Encryptor-Tests
             tests/test_base256.cpp
     )
@@ -54,4 +54,4 @@ if(BUILD_TESTING)
             TEST_PREFIX base256:
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
-endif()
+endif ()

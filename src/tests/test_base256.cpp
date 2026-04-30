@@ -45,7 +45,7 @@ TEST_CASE("Base256: constructors, copy, assignment, self-assignment") {
 
     SECTION("Self-assignment is safe") {
         Base256 a(424242);
-        Base256& ref = a;
+        Base256 &ref = a;
         a = ref; // self-assign
         REQUIRE(a == make(424242));
     }
