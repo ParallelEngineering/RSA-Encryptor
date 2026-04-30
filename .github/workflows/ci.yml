@@ -1,0 +1,86 @@
+name: CI/CD Pipeline
+
+on:
+  # Triggers when a Pull Request is opened or updated
+  pull_request:
+    branches: [ "main" ]
+  # Triggers when a push is made directly to the main branch
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure CMake
+        # Configure in Release mode. 
+        # BUILD_TESTING is ON by default in your CMakeLists.
+        run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build Project
+        # Uses all available cores to speed up compilation
+        run: cmake --build build --config Release -j $(nproc)
+
+      - name: Run Tests
+        # Runs CTest inside the build directory. 
+        # --output-on-failure ensures test errors are printed to the logs.
+        run: ctest --test-dir build --output-on-failure -C Release
+
+      # Optional: Temporarily store the compiled executable as an artifact
+      # so it can be attached to the GitHub Release in the next job.
+      - name: Upload Executable Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: RSA-Encryptor-Linux
+          path: build/RSA-Encryptor
+          retention-days: 1
+
+  create-prerelease:
+    name: Create Pre-Release
+    needs: build-and-test
+    # This ensures the release job ONLY runs on pushes to main (not on PRs)
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    
+    # Required permission to create tags and releases
+    permissions:
+      contents: write 
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Download Executable Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: RSA-Encryptor-Linux
+          path: ./release-artifacts
+
+      - name: Generate Tag Name
+        id: generate_tag
+        run: |
+          # Get current date in YYYYMMDD format
+          DATE=$(date +'%Y%m%d')
+          # Get the first 8 characters of the commit hash
+          SHORT_SHA=${GITHUB_SHA::8}
+          # Combine them
+          TAG_NAME="dev-${DATE}-${SHORT_SHA}"
+          
+          echo "Created Tag Name: $TAG_NAME"
+          # Save it to GitHub Environment Variables so the next step can use it
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+
+      - name: Publish GitHub Pre-Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # Uses the pre-installed GitHub CLI to create the release and upload the executable.
+        run: |
+          gh release create "${{ env.TAG_NAME }}" ./release-artifacts/RSA-Encryptor \
+            --title "Development Build ${{ env.TAG_NAME }}" \
+            --prerelease \
+            --generate-notes
