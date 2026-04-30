@@ -1,86 +1,94 @@
 name: CI/CD Pipeline
 
 on:
-  # Triggers when a Pull Request is opened or updated
   pull_request:
     branches: [ "main" ]
-  # Triggers when a push is made directly to the main branch
   push:
     branches: [ "main" ]
 
 jobs:
+  # JOB 1: Build and test matrix
+  # Runs on PRs and pushes to main across OS's
   build-and-test:
-    name: Build and Test
-    runs-on: ubuntu-latest
+    name: Build & Test (${{ matrix.config.name }} - ${{ matrix.build-configuration }})
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - { name: "Windows gcc", os: windows-latest, cc: "gcc", cxx: "g++" }
+          - { name: "Ubuntu gcc", os: ubuntu-latest, cc: "gcc", cxx: "g++" }
+          - { name: "MacOS clang", os: macos-latest, cc: "clang", cxx: "clang++" }
+        build-configuration: [ Debug, Release ]
 
     steps:
-      - name: Checkout Code
+      - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Setup Ninja
+        uses: ashutoshvarma/setup-ninja@master
 
       - name: Configure CMake
-        # Configure in Release mode. 
-        # BUILD_TESTING is ON by default in your CMakeLists.
-        run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+        run: |
+          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build-configuration }} -DCMAKE_C_COMPILER=${{ matrix.config.cc }} -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }}
 
       - name: Build Project
-        # Uses all available cores to speed up compilation
-        run: cmake --build build --config Release -j $(nproc)
+        run: cmake --build build --config ${{ matrix.build-configuration }}
 
-      - name: Run Tests
-        # Runs CTest inside the build directory. 
-        # --output-on-failure ensures test errors are printed to the logs.
-        run: ctest --test-dir build --output-on-failure -C Release
+      - name: Run Catch2 Unit Tests
+        # Runs the unit tests you specified
+        run: ctest --test-dir build -C ${{ matrix.build-configuration }} --output-on-failure
 
-      # Optional: Temporarily store the compiled executable as an artifact
-      # so it can be attached to the GitHub Release in the next job.
-      - name: Upload Executable Artifact
+      # We only package and upload 'Release' builds to save storage and time
+      - name: Compress Release Build Directory
+        if: matrix.build-configuration == 'Release'
+        uses: thedoctor0/zip-release@0.7.5
+        with:
+          type: 'zip'
+          path: 'build'
+          filename: '${{ matrix.config.os }}-build.zip'
+
+      - name: Upload Artifacts for Release
+        if: matrix.build-configuration == 'Release'
         uses: actions/upload-artifact@v4
         with:
-          name: RSA-Encryptor-Linux
-          path: build/RSA-Encryptor
+          name: ${{ matrix.config.os }}-build
+          path: ${{ matrix.config.os }}-build.zip
           retention-days: 1
 
-  create-prerelease:
+
+  # JOB 2: Create Pre-Release
+  # Runs only on pushes to main, after tests pass
+  release:
     name: Create Pre-Release
     needs: build-and-test
-    # This ensures the release job ONLY runs on pushes to main (not on PRs)
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    
-    # Required permission to create tags and releases
     permissions:
       contents: write 
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Download Executable Artifact
+      - name: Download all OS Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: RSA-Encryptor-Linux
           path: ./release-artifacts
+          merge-multiple: true # Puts the Mac, Win, and Linux zip files in the same folder
 
-      - name: Generate Tag Name
-        id: generate_tag
-        run: |
-          # Get current date in YYYYMMDD format
-          DATE=$(date +'%Y%m%d')
-          # Get the first 8 characters of the commit hash
-          SHORT_SHA=${GITHUB_SHA::8}
-          # Combine them
-          TAG_NAME="dev-${DATE}-${SHORT_SHA}"
-          
-          echo "Created Tag Name: $TAG_NAME"
-          # Save it to GitHub Environment Variables so the next step can use it
-          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
-
-      - name: Publish GitHub Pre-Release
+      - name: Generate Tag & Publish Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        # Uses the pre-installed GitHub CLI to create the release and upload the executable.
         run: |
-          gh release create "${{ env.TAG_NAME }}" ./release-artifacts/RSA-Encryptor \
-            --title "Development Build ${{ env.TAG_NAME }}" \
+          # Create naming convention
+          DATE=$(date +'%Y%m%d')
+          SHORT_SHA=${GITHUB_SHA::8}
+          TAG_NAME="dev-${DATE}-${SHORT_SHA}"
+          
+          # Create Pre-Release and attach all downloaded .zip files using modern GitHub CLI
+          gh release create "$TAG_NAME" ./release-artifacts/*.zip \
+            --title "Development Build $TAG_NAME" \
             --prerelease \
             --generate-notes
