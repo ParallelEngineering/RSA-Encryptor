@@ -8,7 +8,7 @@
     std::int64_t index = 0;
     std::int64_t bitsSince1 = 0;
 
-    for (const std::uint8_t number : a) {
+    for (const std::uint8_t number: a) {
         if (number == 0) {
             bitsSince1 += 8;
             continue;
@@ -54,7 +54,7 @@
 
     bool mostSignificantBit = (pickNumber[index / 8] & (0b1 << (index % 8))) != 0;
 
-    for (std::uint8_t currentByte : number) {
+    for (std::uint8_t currentByte: number) {
         // FIX: The mask for MSB is 0x80 (128). We evaluate this BEFORE currentByte gets overwritten/shifted.
         bool nextMSB = (currentByte & 0x80) != 0;
         result.push_back(static_cast<std::uint8_t>((currentByte << 1) | mostSignificantBit));
@@ -67,7 +67,7 @@
 }
 
 [[nodiscard]] inline bool isBigger(const std::vector<std::uint8_t> &a,
-                            const std::vector<std::uint8_t> &b) noexcept {
+                                   const std::vector<std::uint8_t> &b) noexcept {
     const std::uint32_t aSize = a.size();
     const std::uint32_t bSize = b.size();
     const std::uint64_t iterations = aSize > bSize ? aSize : bSize;
@@ -87,7 +87,7 @@
 }
 
 [[nodiscard]] inline bool isEqual(const std::vector<std::uint8_t> &a,
-                           const std::vector<std::uint8_t> &b) noexcept {
+                                  const std::vector<std::uint8_t> &b) noexcept {
     const std::uint32_t aSize = a.size();
     const std::uint32_t bSize = b.size();
     const std::uint64_t iterations = aSize > bSize ? aSize : bSize;
@@ -107,7 +107,7 @@
 }
 
 [[nodiscard]] inline bool isZero(const std::vector<std::uint8_t> &a) {
-    for (const std::uint8_t number : a) {
+    for (const std::uint8_t number: a) {
         if (number != 0) return false;
     }
     return true;

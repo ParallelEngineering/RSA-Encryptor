@@ -52,7 +52,6 @@ void operations::Base256::add(const std::vector<std::uint8_t> &b) noexcept {
 
 [[nodiscard]] std::vector<std::uint8_t> operations::Base256::sub(
     const std::vector<std::uint8_t> &a, const std::vector<std::uint8_t> &b) noexcept {
-
     // Safely clamp to 0 if the number being subtracted is larger than the base
     if (isBigger(b, a)) {
         return {0};
