@@ -3,7 +3,6 @@
 
 #include <cstdint>
 #include <iostream>
-#include <vector>
 
 #include "helper.h"
 
@@ -16,19 +15,19 @@ class Base256 {
 
     Base256() { data = convertToVector(0); }
 
-    void add(const std::vector<std::uint8_t> &b) noexcept;
+    void add(const ByteArray &b) noexcept;
 
-    void sub(const std::vector<std::uint8_t> &b) noexcept;
+    void sub(const ByteArray &b) noexcept;
 
-    std::vector<std::uint8_t> sub(const std::vector<std::uint8_t> &a,
-                                  const std::vector<std::uint8_t> &b) noexcept;
+    ByteArray sub(const ByteArray &a,
+                                  const ByteArray &b) noexcept;
 
-    void mul(const std::vector<std::uint8_t> &b) noexcept;
+    void mul(const ByteArray &b) noexcept;
 
-    void div(const std::vector<std::uint8_t> &divisor,
-             std::vector<std::uint8_t> *remaining = nullptr) noexcept;
+    void div(const ByteArray &divisor,
+             ByteArray *remaining = nullptr) noexcept;
 
-    std::vector<std::uint8_t> pow(const std::vector<std::uint8_t> &a,
+    ByteArray pow(const ByteArray &a,
                                   const std::uint64_t &pow) noexcept;
 
     void print() const {
@@ -38,6 +37,12 @@ class Base256 {
             value = (value << 8) | static_cast<std::uint64_t>(*it);
         }
         std::cout << value << '\n';
+    }
+
+    void normalizeVector(ByteArray& a) const {
+        while (a.size() > 1 && a.back() == 0) {
+            a.pop_back();
+        }
     }
 
     Base256 &operator=(const Base256 &other) {
@@ -117,7 +122,7 @@ class Base256 {
     }
 
    private:
-    std::vector<std::uint8_t> data;
+    ByteArray data;
 };
 }  // namespace operations
 

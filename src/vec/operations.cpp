@@ -2,10 +2,10 @@
 
 #include <algorithm>
 
-void operations::Base256::add(const std::vector<std::uint8_t> &b) noexcept {
+void operations::Base256::add(const ByteArray &b) noexcept {
     // Time complexity O(iterations)
     // Initialize the result vector to store the sum
-    std::vector<std::uint8_t> result;
+    ByteArray result;
 
     // Get the max iterations based on the largest vector
     const int iterations = std::max(data.size(), b.size());
@@ -43,21 +43,19 @@ void operations::Base256::add(const std::vector<std::uint8_t> &b) noexcept {
     }
 
     // Strip mathematical leading zeros (trailing in little-endian representation)
-    while (result.size() > 1 && result.back() == 0) {
-        result.pop_back();
-    }
+    normalizeVector(result);
 
     data = std::move(result);
 }
 
-[[nodiscard]] std::vector<std::uint8_t> operations::Base256::sub(
-    const std::vector<std::uint8_t> &a, const std::vector<std::uint8_t> &b) noexcept {
+[[nodiscard]] ByteArray operations::Base256::sub(
+    const ByteArray &a, const ByteArray &b) noexcept {
     // Safely clamp to 0 if the number being subtracted is larger than the base
     if (isBigger(b, a)) {
         return {0};
     }
 
-    std::vector<std::uint8_t> result;
+    ByteArray result;
 
     // Handle an underflow when subtracting
     bool borrow = false;
@@ -88,26 +86,24 @@ void operations::Base256::add(const std::vector<std::uint8_t> &b) noexcept {
     }
 
     // Strip trailing zeroes to normalize
-    while (result.size() > 1 && result.back() == 0) {
-        result.pop_back();
-    }
+    normalizeVector(result);
 
     return result;
 }
 
 // The return value can only be positive, if it would be negative, 0 is returned
-void operations::Base256::sub(const std::vector<std::uint8_t> &b) noexcept {
-    std::vector<std::uint8_t> result = sub(data, b);
+void operations::Base256::sub(const ByteArray &b) noexcept {
+    ByteArray result = sub(data, b);
     data = std::move(result);
 }
 
-void operations::Base256::mul(const std::vector<std::uint8_t> &b) noexcept {
+void operations::Base256::mul(const ByteArray &b) noexcept {
     // Time complexity O(aSize * bSize)
     const std::uint64_t aSize = data.size();
     const std::uint64_t bSize = b.size();
 
     // Initialize the result vector with zeros, with the size of aSize + bSize
-    std::vector<std::uint8_t> result(aSize + bSize, 0);
+    ByteArray result(aSize + bSize, 0);
 
     for (std::uint64_t i = 0; i < aSize; i++) {
         // Set up the carry value for each iteration
@@ -116,7 +112,7 @@ void operations::Base256::mul(const std::vector<std::uint8_t> &b) noexcept {
         for (uint64_t x = 0; x < bSize; x++) {
             // Calculate the product by adding up the previous result, the carry, and the new
             // product
-            std::uint16_t product = result[i + x] + carry + (data[i] * b[x]);
+            const std::uint16_t product = result[i + x] + carry + (data[i] * b[x]);
 
             // Calculate the carry which is the overflow beyond 255
             carry = product >> 8;
@@ -131,15 +127,13 @@ void operations::Base256::mul(const std::vector<std::uint8_t> &b) noexcept {
     }
 
     // Since aSize + bSize typically provides extra buffering, normalise the number safely
-    while (result.size() > 1 && result.back() == 0) {
-        result.pop_back();
-    }
+    normalizeVector(result);
 
     data = std::move(result);
 }
 
-void operations::Base256::div(const std::vector<std::uint8_t> &divisor,
-                              std::vector<std::uint8_t> *remaining) noexcept {
+void operations::Base256::div(const ByteArray &divisor,
+                              ByteArray *remaining) noexcept {
     if (isZero(divisor)) {
         data = {0};
         if (remaining != nullptr) *remaining = {0};
@@ -154,10 +148,10 @@ void operations::Base256::div(const std::vector<std::uint8_t> &divisor,
     }
 
     // Vector preallocated to support max potential bits mapped by initial index
-    std::vector<std::uint8_t> quotient((initialDividendIndex / 8) + 1, 0);
+    ByteArray quotient((initialDividendIndex / 8) + 1, 0);
 
     std::int64_t dividendIndex = initialDividendIndex;
-    std::vector<std::uint8_t> dividendMask = addBitFromNumber({0}, data, dividendIndex--);
+    ByteArray dividendMask = addBitFromNumber({0}, data, dividendIndex--);
 
     while (dividendIndex >= -1) {
         // Evaluate mathematical power index representing current bit generated
@@ -185,18 +179,17 @@ void operations::Base256::div(const std::vector<std::uint8_t> &divisor,
     }
 
     // Strip trailing normalization zeros (empty space buffers) securely
-    while (quotient.size() > 1 && quotient.back() == 0) {
-        quotient.pop_back();
-    }
+    normalizeVector(quotient);
+
     if (quotient.empty()) quotient.push_back(0);
 
     data = std::move(quotient);
 }
 
-[[nodiscard]] std::vector<std::uint8_t> operations::Base256::pow(
-    const std::vector<std::uint8_t> &a, const std::uint64_t &pow) noexcept {
+[[nodiscard]] ByteArray operations::Base256::pow(
+    const ByteArray &a, const std::uint64_t &pow) noexcept {
     // Copy the value from an into result while keeping a constant
-    std::vector<std::uint8_t> result;
+    ByteArray result;
     std::copy(a.begin(), a.end(), std::back_inserter(result));
 
     // Start the loop at 1, because the first number is already assigned to result

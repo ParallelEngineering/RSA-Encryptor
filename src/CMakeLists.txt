@@ -31,6 +31,7 @@ add_library(RSA-Core
         key.cpp
         encryption.cpp
         vec/operations.cpp
+        vec/types.h
 )
 target_include_directories(RSA-Core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 

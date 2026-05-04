@@ -1,36 +1,36 @@
 #ifndef RSA_ENCRYPTOR_HELPER_H
 #define RSA_ENCRYPTOR_HELPER_H
 
+#include <assert.h>
 #include <cstdint>
-#include <vector>
+#include "types.h"
 
-[[nodiscard]] inline std::int64_t getStartBitIndex(const std::vector<std::uint8_t> &a) {
-    std::int64_t index = 0;
-    std::int64_t bitsSince1 = 0;
+[[nodiscard]] inline std::int64_t getStartBitIndex(const ByteArray &a) {
+    // Handle the absolute zero edge-case
+    if (a.empty() || (a.size() == 1 && a[0] == 0)) {
+        return -1;
+    }
 
-    for (const std::uint8_t number : a) {
-        if (number == 0) {
-            bitsSince1 += 8;
-            continue;
-        }
-        for (std::uint64_t i = 0; i < sizeof(std::uint8_t) * 8; i++) {
-            if ((number & (0b1 << i)) != 0) {
-                index += bitsSince1 + 1;
-                bitsSince1 = 0;
-            } else {
-                bitsSince1++;
-            }
+    // Because of normalization, the highest bit is guaranteed
+    // to be in the very last byte of the vector.
+    const std::int64_t highestByteIndex = a.size() - 1;
+    const std::uint8_t highestByte = a.back();
+
+    // Find the highest bit in just this one byte (max 8 iterations)
+    for (std::int64_t bit = 7; bit >= 0; bit--) {
+        if ((highestByte & (0b1 << bit)) != 0) {
+            // Calculate total bit index: (Byte Position * 8) + Bit Position
+            return (highestByteIndex * 8) + bit;
         }
     }
 
-    // Returning signed int64_t stops negative values from underflowing
-    return index - 1;
+    assert(false);
 }
 
-[[nodiscard]] inline std::vector<std::uint8_t> convertToVector(std::uint64_t number) noexcept {
-    std::vector<std::uint8_t> result;
+[[nodiscard]] inline ByteArray convertToVector(std::uint64_t number) noexcept {
+    ByteArray result;
 
-    // Securely ensure 0 results in at least [0], never[]
+    // Ensure 0 results in at least [0], never[]
     if (number == 0) return {0};
 
     while (number) {
@@ -41,22 +41,23 @@
     return result;
 }
 
-[[nodiscard]] inline std::vector<std::uint8_t> addBitFromNumber(
-    const std::vector<std::uint8_t> &number, const std::vector<std::uint8_t> &pickNumber,
-    const std::int64_t index) {
-    std::vector<std::uint8_t> result;
+[[nodiscard]] inline ByteArray addBitFromNumber(
+    const ByteArray &numberToShift,
+    const ByteArray &sourceNumber,
+    const std::int64_t bitIndex) {
+    ByteArray result;
 
     // Validated boundary access
-    if (index < 0 || index > getStartBitIndex(pickNumber)) {
+    if (bitIndex < 0 || bitIndex > getStartBitIndex(sourceNumber)) {
         return {0};
     }
 
-    bool mostSignificantBit = (pickNumber[index / 8] & (0b1 << (index % 8))) != 0;
+    bool mostSignificantBit = (sourceNumber[bitIndex / 8] & (0b1 << (bitIndex % 8))) != 0;
 
-    for (std::uint8_t currentByte : number) {
-        // FIX: The mask for MSB is 0x80 (128). We evaluate this BEFORE currentByte gets
+    for (const std::uint8_t currentByte : numberToShift) {
+        // The mask for MSB is 0x80 (128). We evaluate this BEFORE currentByte gets
         // overwritten/shifted.
-        bool nextMSB = (currentByte & 0x80) != 0;
+        const bool nextMSB = (currentByte & 0x80) != 0;
         result.push_back(static_cast<std::uint8_t>((currentByte << 1) | mostSignificantBit));
         mostSignificantBit = nextMSB;
     }
@@ -66,8 +67,8 @@
     return result;
 }
 
-[[nodiscard]] inline bool isBigger(const std::vector<std::uint8_t> &a,
-                                   const std::vector<std::uint8_t> &b) noexcept {
+[[nodiscard]] inline bool isBigger(const ByteArray &a,
+                                   const ByteArray &b) noexcept {
     const std::uint32_t aSize = a.size();
     const std::uint32_t bSize = b.size();
     const std::uint64_t iterations = aSize > bSize ? aSize : bSize;
@@ -78,23 +79,25 @@
 
         if (aValue > bValue) {
             return true;
-        } else if (aValue < bValue) {
-            return false;  // FIX: Ensure false is explicitly returned if the checking bit drops
-                           // behind.
+        }
+
+        // Explicitly return false if the checking bit drops behind
+        if (aValue < bValue) {
+            return false;
         }
     }
 
     return false;
 }
 
-[[nodiscard]] inline bool isEqual(const std::vector<std::uint8_t> &a,
-                                  const std::vector<std::uint8_t> &b) noexcept {
+[[nodiscard]] inline bool isEqual(const ByteArray &a,
+                                  const ByteArray &b) noexcept {
     const std::uint32_t aSize = a.size();
     const std::uint32_t bSize = b.size();
     const std::uint64_t iterations = aSize > bSize ? aSize : bSize;
 
     const std::uint32_t shortest = aSize < bSize ? aSize : bSize;
-    const std::vector<std::uint8_t> longest = aSize > bSize ? a : b;
+    const ByteArray longest = aSize > bSize ? a : b;
 
     for (std::uint64_t i = 0; i < iterations; i++) {
         if (i >= shortest) {
@@ -107,7 +110,7 @@
     return true;
 }
 
-[[nodiscard]] inline bool isZero(const std::vector<std::uint8_t> &a) {
+[[nodiscard]] inline bool isZero(const ByteArray &a) {
     for (const std::uint8_t number : a) {
         if (number != 0) return false;
     }
