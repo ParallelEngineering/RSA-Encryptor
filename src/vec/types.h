@@ -5,4 +5,4 @@
 
 using ByteArray = std::vector<std::uint8_t>;
 
-#endif //RSA_ENCRYPTOR_TYPES_H
+#endif  // RSA_ENCRYPTOR_TYPES_H

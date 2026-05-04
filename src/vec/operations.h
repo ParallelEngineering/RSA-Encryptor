@@ -19,16 +19,13 @@ class Base256 {
 
     void sub(const ByteArray &b) noexcept;
 
-    ByteArray sub(const ByteArray &a,
-                                  const ByteArray &b) noexcept;
+    ByteArray sub(const ByteArray &a, const ByteArray &b) noexcept;
 
     void mul(const ByteArray &b) noexcept;
 
-    void div(const ByteArray &divisor,
-             ByteArray *remaining = nullptr) noexcept;
+    void div(const ByteArray &divisor, ByteArray *remaining = nullptr) noexcept;
 
-    ByteArray pow(const ByteArray &a,
-                                  const std::uint64_t &pow) noexcept;
+    ByteArray pow(const ByteArray &a, const std::uint64_t &pow) noexcept;
 
     void print() const {
         std::uint64_t value = 0;
@@ -39,7 +36,7 @@ class Base256 {
         std::cout << value << '\n';
     }
 
-    void normalizeVector(ByteArray& a) const {
+    void normalizeVector(ByteArray &a) const {
         while (a.size() > 1 && a.back() == 0) {
             a.pop_back();
         }

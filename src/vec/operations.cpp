@@ -48,8 +48,7 @@ void operations::Base256::add(const ByteArray &b) noexcept {
     data = std::move(result);
 }
 
-[[nodiscard]] ByteArray operations::Base256::sub(
-    const ByteArray &a, const ByteArray &b) noexcept {
+[[nodiscard]] ByteArray operations::Base256::sub(const ByteArray &a, const ByteArray &b) noexcept {
     // Safely clamp to 0 if the number being subtracted is larger than the base
     if (isBigger(b, a)) {
         return {0};
@@ -132,8 +131,7 @@ void operations::Base256::mul(const ByteArray &b) noexcept {
     data = std::move(result);
 }
 
-void operations::Base256::div(const ByteArray &divisor,
-                              ByteArray *remaining) noexcept {
+void operations::Base256::div(const ByteArray &divisor, ByteArray *remaining) noexcept {
     if (isZero(divisor)) {
         data = {0};
         if (remaining != nullptr) *remaining = {0};
@@ -186,8 +184,8 @@ void operations::Base256::div(const ByteArray &divisor,
     data = std::move(quotient);
 }
 
-[[nodiscard]] ByteArray operations::Base256::pow(
-    const ByteArray &a, const std::uint64_t &pow) noexcept {
+[[nodiscard]] ByteArray operations::Base256::pow(const ByteArray &a,
+                                                 const std::uint64_t &pow) noexcept {
     // Copy the value from an into result while keeping a constant
     ByteArray result;
     std::copy(a.begin(), a.end(), std::back_inserter(result));

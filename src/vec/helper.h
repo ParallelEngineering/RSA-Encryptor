@@ -2,7 +2,9 @@
 #define RSA_ENCRYPTOR_HELPER_H
 
 #include <assert.h>
+
 #include <cstdint>
+
 #include "types.h"
 
 [[nodiscard]] inline std::int64_t getStartBitIndex(const ByteArray &a) {
@@ -41,10 +43,9 @@
     return result;
 }
 
-[[nodiscard]] inline ByteArray addBitFromNumber(
-    const ByteArray &numberToShift,
-    const ByteArray &sourceNumber,
-    const std::int64_t bitIndex) {
+[[nodiscard]] inline ByteArray addBitFromNumber(const ByteArray &numberToShift,
+                                                const ByteArray &sourceNumber,
+                                                const std::int64_t bitIndex) {
     ByteArray result;
 
     // Validated boundary access
@@ -67,8 +68,7 @@
     return result;
 }
 
-[[nodiscard]] inline bool isBigger(const ByteArray &a,
-                                   const ByteArray &b) noexcept {
+[[nodiscard]] inline bool isBigger(const ByteArray &a, const ByteArray &b) noexcept {
     const std::uint32_t aSize = a.size();
     const std::uint32_t bSize = b.size();
     const std::uint64_t iterations = aSize > bSize ? aSize : bSize;
@@ -90,8 +90,7 @@
     return false;
 }
 
-[[nodiscard]] inline bool isEqual(const ByteArray &a,
-                                  const ByteArray &b) noexcept {
+[[nodiscard]] inline bool isEqual(const ByteArray &a, const ByteArray &b) noexcept {
     const std::uint32_t aSize = a.size();
     const std::uint32_t bSize = b.size();
     const std::uint64_t iterations = aSize > bSize ? aSize : bSize;
