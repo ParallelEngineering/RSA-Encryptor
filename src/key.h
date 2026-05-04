@@ -13,7 +13,7 @@ enum { NONE, PUBLIC, PRIVATE, BOTH };
 const char base64Chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 class key {
-private:
+   private:
     static std::filesystem::path keysPath();
 
     static int keyExists(std::string name);
@@ -32,7 +32,7 @@ private:
 
     static int createKey(std::vector<uint8_t> *keyPublic, std::vector<uint8_t> *keyPrivate);
 
-public:
+   public:
     static void createRSAKey();
 
     static std::vector<uint8_t> *getPrivateKey(std::string &name);

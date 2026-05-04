@@ -4,15 +4,15 @@
 #include <string>
 
 namespace cli {
-    void help();
+void help();
 
-    namespace keyManager {
-        void create();
+namespace keyManager {
+void create();
 
-        void list();
+void list();
 
-        void print(const std::string &name, bool publicKey, bool privateKey);
-    } // namespace keyManager
-} // namespace cli
+void print(const std::string &name, bool publicKey, bool privateKey);
+}  // namespace keyManager
+}  // namespace cli
 
 #endif

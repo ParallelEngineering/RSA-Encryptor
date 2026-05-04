@@ -1,7 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <cstdint>
-#include <limits>
 #include <iostream>
+#include <limits>
 
 #include "vec/operations.h"
 
@@ -46,7 +46,7 @@ TEST_CASE("Base256: constructors, copy, assignment, self-assignment") {
     SECTION("Self-assignment is safe") {
         Base256 a(424242);
         Base256 &ref = a;
-        a = ref; // self-assign
+        a = ref;  // self-assign
         REQUIRE(a == make(424242));
     }
 }
@@ -60,27 +60,23 @@ TEST_CASE("Base256: equality and inequality") {
 }
 
 TEST_CASE("Base256: addition & compound addition") {
-    SECTION("Simple add") {
-        REQUIRE(make(10) + make(20) == make(30));
-    }
+    SECTION("Simple add") { REQUIRE(make(10) + make(20) == make(30)); }
 
     SECTION("Add zero is identity") {
         REQUIRE(make(123456) + make(0) == make(123456));
         REQUIRE(make(0) + make(123456) == make(123456));
     }
 
-    SECTION("Carry across one byte") {
-        REQUIRE(make(255) + make(1) == make(256));
-    }
+    SECTION("Carry across one byte") { REQUIRE(make(255) + make(1) == make(256)); }
 
     SECTION("Cascading carry across multiple bytes") {
-        REQUIRE(make(65535) + make(1) == make(65536)); // 0xFFFF + 1 = 0x10000
-        REQUIRE(make(16777215) + make(1) == make(16777216)); // 0xFFFFFF + 1
-        REQUIRE(make(4294967295) + make(1) == make(4294967296)); // 0xFFFFFFFF + 1
+        REQUIRE(make(65535) + make(1) == make(65536));            // 0xFFFF + 1 = 0x10000
+        REQUIRE(make(16777215) + make(1) == make(16777216));      // 0xFFFFFF + 1
+        REQUIRE(make(4294967295) + make(1) == make(4294967296));  // 0xFFFFFFFF + 1
     }
 
     SECTION("Addition exceeding uint64_t (8 bytes to 9 bytes)") {
-        Base256 a(MAX_U64); // 0xFFFFFFFFFFFFFFFF
+        Base256 a(MAX_U64);  // 0xFFFFFFFFFFFFFFFF
         Base256 b(2);
         Base256 c = a + b;
 
@@ -108,22 +104,16 @@ TEST_CASE("Base256: addition & compound addition") {
 }
 
 TEST_CASE("Base256: subtraction & compound subtraction") {
-    SECTION("Simple sub") {
-        REQUIRE(make(30) - make(20) == make(10));
-    }
+    SECTION("Simple sub") { REQUIRE(make(30) - make(20) == make(10)); }
 
-    SECTION("Subtract zero is identity") {
-        REQUIRE(make(123456) - make(0) == make(123456));
-    }
+    SECTION("Subtract zero is identity") { REQUIRE(make(123456) - make(0) == make(123456)); }
 
     SECTION("Subtract to zero") {
         REQUIRE(make(123456) - make(123456) == make(0));
         REQUIRE(make(MAX_U64) - make(MAX_U64) == make(0));
     }
 
-    SECTION("Borrow across one byte") {
-        REQUIRE(make(256) - make(1) == make(255));
-    }
+    SECTION("Borrow across one byte") { REQUIRE(make(256) - make(1) == make(255)); }
 
     SECTION("Cascading borrow across multiple bytes") {
         REQUIRE(make(65536) - make(1) == make(65535));
@@ -148,9 +138,7 @@ TEST_CASE("Base256: subtraction & compound subtraction") {
 }
 
 TEST_CASE("Base256: multiplication & compound multiplication") {
-    SECTION("Simple mul") {
-        REQUIRE(make(7) * make(6) == make(42));
-    }
+    SECTION("Simple mul") { REQUIRE(make(7) * make(6) == make(42)); }
 
     SECTION("Mul by zero and one") {
         REQUIRE(make(123456) * make(0) == make(0));
@@ -165,9 +153,9 @@ TEST_CASE("Base256: multiplication & compound multiplication") {
     }
 
     SECTION("Large multiplication (Exceeding uint64_t)") {
-        Base256 a(4294967295); // 0xFFFFFFFF (4 bytes)
+        Base256 a(4294967295);  // 0xFFFFFFFF (4 bytes)
         Base256 b(4294967295);
-        Base256 c = a * b; // Should be 0xFFFFFFFE00000001 (8 bytes)
+        Base256 c = a * b;  // Should be 0xFFFFFFFE00000001 (8 bytes)
 
         // Verify via division
         REQUIRE(c / a == b);
@@ -186,7 +174,8 @@ TEST_CASE("Base256: multiplication & compound multiplication") {
         for (uint64_t a = 0; a <= 10; ++a)
             for (uint64_t b = 0; b <= 10; ++b)
                 for (uint64_t c = 0; c <= 10; ++c)
-                    REQUIRE(make(a) * (make(b) + make(c)) == (make(a) * make(b)) + (make(a) * make(c)));
+                    REQUIRE(make(a) * (make(b) + make(c)) ==
+                            (make(a) * make(b)) + (make(a) * make(c)));
     }
 }
 
@@ -285,7 +274,7 @@ TEST_CASE("Base256: comparisons edge cases") {
         REQUIRE(max64 > a256);
         REQUIRE(a0 < max64);
 
-        Base256 overflow = max64 + a1; // Exceeds uint64_t
+        Base256 overflow = max64 + a1;  // Exceeds uint64_t
         REQUIRE(overflow > max64);
         REQUIRE(max64 < overflow);
     }

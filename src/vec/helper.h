@@ -8,7 +8,7 @@
     std::int64_t index = 0;
     std::int64_t bitsSince1 = 0;
 
-    for (const std::uint8_t number: a) {
+    for (const std::uint8_t number : a) {
         if (number == 0) {
             bitsSince1 += 8;
             continue;
@@ -27,8 +27,7 @@
     return index - 1;
 }
 
-[[nodiscard]] inline std::vector<std::uint8_t> convertToVector(
-    std::uint64_t number) noexcept {
+[[nodiscard]] inline std::vector<std::uint8_t> convertToVector(std::uint64_t number) noexcept {
     std::vector<std::uint8_t> result;
 
     // Securely ensure 0 results in at least [0], never[]
@@ -54,8 +53,9 @@
 
     bool mostSignificantBit = (pickNumber[index / 8] & (0b1 << (index % 8))) != 0;
 
-    for (std::uint8_t currentByte: number) {
-        // FIX: The mask for MSB is 0x80 (128). We evaluate this BEFORE currentByte gets overwritten/shifted.
+    for (std::uint8_t currentByte : number) {
+        // FIX: The mask for MSB is 0x80 (128). We evaluate this BEFORE currentByte gets
+        // overwritten/shifted.
         bool nextMSB = (currentByte & 0x80) != 0;
         result.push_back(static_cast<std::uint8_t>((currentByte << 1) | mostSignificantBit));
         mostSignificantBit = nextMSB;
@@ -79,7 +79,8 @@
         if (aValue > bValue) {
             return true;
         } else if (aValue < bValue) {
-            return false; // FIX: Ensure false is explicitly returned if the checking bit drops behind.
+            return false;  // FIX: Ensure false is explicitly returned if the checking bit drops
+                           // behind.
         }
     }
 
@@ -107,7 +108,7 @@
 }
 
 [[nodiscard]] inline bool isZero(const std::vector<std::uint8_t> &a) {
-    for (const std::uint8_t number: a) {
+    for (const std::uint8_t number : a) {
         if (number != 0) return false;
     }
     return true;
