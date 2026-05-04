@@ -22,7 +22,7 @@ int key::keyExists(std::string name) {
     std::filesystem::path keysFolder = keysPath();
 
     // go over every file in the KEY_FOLDER
-    for (const auto &entry: std::filesystem::directory_iterator(keysFolder)) {
+    for (const auto &entry : std::filesystem::directory_iterator(keysFolder)) {
         // check if the name matches
         if (entry.path().stem().string() == name) {
             // check if it's a public key
@@ -141,7 +141,7 @@ std::string key::base64Encode(const std::vector<uint8_t> &data) {
     std::string outString;
 
     // convert the numeric value to the corresponding char of the base64 charset
-    for (auto c: result) {
+    for (auto c : result) {
         outString += base64Chars[c];
     }
 
@@ -171,7 +171,7 @@ std::vector<uint8_t> key::base64Decode(std::string data) {
             // check for valid char code
             if (number > 0b111111) {
                 std::cerr << "trying to Decode not valid char: " << letterSegment.at(i)
-                        << std::endl;
+                          << std::endl;
                 continue;
             }
             dataSegment += number << i * 6;
@@ -196,18 +196,14 @@ uint8_t key::getBase64Index(char letter) {
 }
 
 int key::createKey(std::vector<uint8_t> *keyPublic, std::vector<uint8_t> *keyPrivate) {
-    *keyPublic = {
-        23, 87, 45, 190, 12, 78, 34, 210, 56, 89, 123, 67, 90, 150, 32, 76, 54,
-        200, 11, 99, 101, 145, 67, 189, 43, 88, 29, 176, 58, 92, 111, 134, 78, 201,
-        15, 84, 39, 220, 66, 97, 105, 142, 71, 185, 49, 81, 27, 170, 53, 95, 41
-    };
-    *keyPrivate = {
-        34, 78, 123, 56, 89, 210, 45, 190, 12, 87, 67, 150, 32, 76, 54,
-        200, 11, 99, 101, 145, 67, 189, 43, 88, 29, 176, 58, 92, 111, 134,
-        78, 201, 15, 84, 39, 220, 66, 97, 105, 142, 71, 185, 49, 81, 27,
-        170, 53, 95, 102, 147, 68, 191, 44, 85, 30, 177, 59, 93, 112, 135,
-        79, 202, 16, 85, 40, 221, 67, 98, 23, 87, 91, 65
-    };
+    *keyPublic = {23,  87, 45, 190, 12,  78, 34,  210, 56, 89,  123, 67, 90, 150, 32,  76, 54,
+                  200, 11, 99, 101, 145, 67, 189, 43,  88, 29,  176, 58, 92, 111, 134, 78, 201,
+                  15,  84, 39, 220, 66,  97, 105, 142, 71, 185, 49,  81, 27, 170, 53,  95, 41};
+    *keyPrivate = {34,  78,  123, 56,  89,  210, 45,  190, 12,  87,  67,  150, 32, 76,  54,
+                   200, 11,  99,  101, 145, 67,  189, 43,  88,  29,  176, 58,  92, 111, 134,
+                   78,  201, 15,  84,  39,  220, 66,  97,  105, 142, 71,  185, 49, 81,  27,
+                   170, 53,  95,  102, 147, 68,  191, 44,  85,  30,  177, 59,  93, 112, 135,
+                   79,  202, 16,  85,  40,  221, 67,  98,  23,  87,  91,  65};
     return 1;
 }
 
