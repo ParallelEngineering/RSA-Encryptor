@@ -1,4 +1,4 @@
-# Addition Logic
+# Addition
 The addition algorithm uses a `uint16_t` accumulator to detect overflows beyond the 8-bit boundary (255).
 
 1. **Iteration:** The algorithm traverses from the LSB (`index 0`) to the MSB (`index N`).

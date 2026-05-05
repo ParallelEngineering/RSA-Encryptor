@@ -36,16 +36,10 @@ The class enforces strict **Array Normalization**. After every operation, traili
 
 ## Algorithmic Mechanics
 
-- [Addition](add.md#addition-logic)
-- [Subtraction](sub.md#subtraction-logic)
-
-### Multiplication
-Multiplication implements a double-loop accumulator matrix. It guarantees no reallocation overhead by pre-allocating a vector of size `A.size() + B.size()`—the maximum possible magnitude of a product. It iterates through every byte of `A`, multiplies it by every byte of `B`, and seamlessly propagates 16-bit carries up the pre-allocated vector indices.
-
-### Division
-To avoid the disastrous performance of iterative subtraction, division utilizes highly optimized **Bitwise Long Division**.
-It calculates the exact highest active bit (`getStartBitIndex`), shifting a scoped `dividendMask` over the divisor one bit at a time. If the mask is larger than the divisor, the divisor is subtracted and the corresponding bit in the newly constructed `quotient` vector is toggled to `1`.
-
+- [Addition](add.md#addition)
+- [Subtraction](sub.md#subtraction)
+- [Subtraction](mul.md#multiplication)
+- [Subtraction](div.md#division)
 ---
 
 ## Code Examples & Usage

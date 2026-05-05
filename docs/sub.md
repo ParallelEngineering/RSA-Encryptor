@@ -1,4 +1,4 @@
-# Subtraction Logic
+# Subtraction
 Subtraction implements a "borrow" propagation system to ensure mathematical correctness within an unsigned integer space:
 
 1. **Underflow Protection:** Before processing, `isBigger` is invoked. If `b > a`, the result is clamped to `0` because negative numbers are not handled.
