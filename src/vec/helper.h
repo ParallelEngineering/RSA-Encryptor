@@ -53,7 +53,13 @@
         return {0};
     }
 
-    bool mostSignificantBit = (sourceNumber[bitIndex / 8] & (0b1 << (bitIndex % 8))) != 0;
+    // bitIndex & 7 is equivalent to bitIndex % 8
+    const int sourceNumberMask = 0b1 << (bitIndex & 7);
+
+    // bitIndex >> 3 is equivalent to bitIndex / 8
+    const int sourceNumberIndex = bitIndex >> 3;
+
+    bool mostSignificantBit = (sourceNumber[sourceNumberIndex] & sourceNumberMask) != 0;
 
     for (const std::uint8_t currentByte : numberToShift) {
         // The mask for MSB is 0x80 (128). We evaluate this BEFORE currentByte gets

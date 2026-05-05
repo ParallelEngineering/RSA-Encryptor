@@ -17,6 +17,7 @@ Each digit holds a value from `0` to `255`. If an arithmetic operation pushes a 
 
 ### 2. Little-Endian Memory Mapping
 Numbers are stored in **little-endian** order, meaning the least-significant byte (LSB) is stored at index `0` of the vector.
+Or in other words 256^0 is always stored at `data[0]`.
 
 This architecture guarantees that the array index maps perfectly to the radix exponent. The byte at `data[i]` is strictly bound to `256^i`. This eliminates the need for complex index inversion during iterative algorithms.
 
@@ -35,15 +36,13 @@ The class enforces strict **Array Normalization**. After every operation, traili
 
 ## Algorithmic Mechanics
 
-### Addition & Subtraction (`O(N)`)
-These operations execute in linear time, sweeping from index `0` upwards.
-* **Addition:** Evaluates `a[i] + b[i] + carry` using a `uint16_t` buffer. If the sum exceeds `0xFF` (255), the bitwise shift `sum >> 8` extracts the carry, and the modulo `sum & 0xFF` is pushed to the result.
-* **Subtraction:** Subtracts byte-by-byte. If `a[i] < b[i]`, a `borrow` is triggered, adding `256` to the current byte and subtracting `1` from the subsequent index. Because the class represents unsigned rings, any subtraction resulting in a global negative state is actively intercepted and clamped strictly to `0`.
+- [Addition](add.md#addition-logic)
+- [Subtraction](sub.md#subtraction-logic)
 
-### Multiplication (`O(N * M)`)
+### Multiplication
 Multiplication implements a double-loop accumulator matrix. It guarantees no reallocation overhead by pre-allocating a vector of size `A.size() + B.size()`—the maximum possible magnitude of a product. It iterates through every byte of `A`, multiplies it by every byte of `B`, and seamlessly propagates 16-bit carries up the pre-allocated vector indices.
 
-### Division (`O(Bits)`)
+### Division
 To avoid the disastrous performance of iterative subtraction, division utilizes highly optimized **Bitwise Long Division**.
 It calculates the exact highest active bit (`getStartBitIndex`), shifting a scoped `dividendMask` over the divisor one bit at a time. If the mask is larger than the divisor, the divisor is subtracted and the corresponding bit in the newly constructed `quotient` vector is toggled to `1`.
 
