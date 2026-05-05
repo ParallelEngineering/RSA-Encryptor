@@ -42,7 +42,7 @@ target_link_libraries(RSA-Encryptor PRIVATE RSA-Core)
 # Tests
 if (BUILD_TESTING)
     add_executable(RSA-Encryptor-Tests
-            tests/test_base256.cpp
+            ../tests/test_base256.cpp
     )
     target_include_directories(RSA-Encryptor-Tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
     target_link_libraries(RSA-Encryptor-Tests
