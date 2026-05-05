@@ -1,3 +1,3 @@
-add_library(
+add_library(RSA-Vec
         base256.cpp
 )

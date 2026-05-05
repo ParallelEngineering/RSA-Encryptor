@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "cli.h"
-#include "key.h"
+#include "core/key.h"
 
 int main(int argc, char *argv[]) {
     struct {
