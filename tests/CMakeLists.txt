@@ -27,6 +27,7 @@ if (BUILD_TESTING)
     target_link_libraries(RSA-Encryptor-Tests
             PRIVATE
             RSA-Core
+            RSA-Vec
             Catch2::Catch2WithMain
     )
 

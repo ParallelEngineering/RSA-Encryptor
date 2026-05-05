@@ -79,7 +79,7 @@ The algorithm initializes the `dividendMask` by taking a value of `0`, shifting 
 The algorithm enters a `while` loop, processing bit by bit from `initialDividendIndex` down to `-1`.
 For every bit position, the mathematical power index (`currentQBitIndex`) is evaluated.
 
-At each step, a Lexicographical Comparison (`isBigger` / `isEqual`) checks if the `dividendMask` (working remainder) is $\ge$ the `divisor`.
+At each step we check if the `dividendMask` (working remainder) is $\ge$ the `divisor`.
 
 **Case A: The Mask is $\ge$ the Divisor**
 * The divisor "fits" inside the working remainder.

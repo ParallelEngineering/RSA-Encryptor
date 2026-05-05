@@ -3,7 +3,7 @@
 #include <iostream>
 #include <limits>
 
-#include "vec/base256.h"
+#include "../src/vec/base256.h"
 
 using operations::Base256;
 
