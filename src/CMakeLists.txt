@@ -5,3 +5,5 @@ add_executable(RSA-Encryptor main.cpp cli.cpp)
 
 add_subdirectory(core)
 add_subdirectory(vec)
+
+target_link_libraries(RSA-Encryptor PRIVATE RSA-Vec)

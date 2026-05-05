@@ -3,7 +3,6 @@
 #include <algorithm>
 
 void operations::Base256::add(const ByteArray &b) noexcept {
-    // Time complexity O(iterations)
     // Initialize the result vector to store the sum
     ByteArray result;
 
@@ -97,7 +96,6 @@ void operations::Base256::sub(const ByteArray &b) noexcept {
 }
 
 void operations::Base256::mul(const ByteArray &b) noexcept {
-    // Time complexity O(aSize * bSize)
     const std::uint64_t aSize = data.size();
     const std::uint64_t bSize = b.size();
 
@@ -125,7 +123,7 @@ void operations::Base256::mul(const ByteArray &b) noexcept {
         result[i + bSize] += static_cast<std::uint8_t>(carry);
     }
 
-    // Since aSize + bSize typically provides extra buffering, normalise the number safely
+    // Since aSize + bSize typically provides extra buffering, normalize the number safely
     normalizeVector(result);
 
     data = std::move(result);
@@ -138,7 +136,7 @@ void operations::Base256::div(const ByteArray &divisor, ByteArray *remaining) no
         return;
     }
 
-    std::int64_t initialDividendIndex = getStartBitIndex(data);
+    const std::int64_t initialDividendIndex = getStartBitIndex(data);
     if (initialDividendIndex < 0) {
         if (remaining != nullptr) *remaining = {0};
         data = {0};
@@ -184,16 +182,11 @@ void operations::Base256::div(const ByteArray &divisor, ByteArray *remaining) no
     data = std::move(quotient);
 }
 
-[[nodiscard]] ByteArray operations::Base256::pow(const ByteArray &a,
-                                                 const std::uint64_t &pow) noexcept {
-    // Copy the value from an into result while keeping a constant
-    ByteArray result;
-    std::copy(a.begin(), a.end(), std::back_inserter(result));
+operations::Base256 operations::Base256::pow(const Base256 &a, const std::uint64_t &pow) {
+    Base256 result(1);
 
-    // Start the loop at 1, because the first number is already assigned to result
-    for (std::uint32_t i = 1; i < pow; i++) {
-        // TODO
-        // result = mul(result, a);
+    for (std::uint64_t i = 0; i < pow; ++i) {
+        result *= a;
     }
 
     return result;

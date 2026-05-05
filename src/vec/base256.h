@@ -1,6 +1,7 @@
 #ifndef VEC_OPERATIONS_H
 #define VEC_OPERATIONS_H
 
+#include <algorithm>
 #include <cstdint>
 #include <iostream>
 
@@ -25,18 +26,39 @@ class Base256 {
 
     void div(const ByteArray &divisor, ByteArray *remaining = nullptr) noexcept;
 
-    ByteArray pow(const ByteArray &a, const std::uint64_t &pow) noexcept;
+    static Base256 pow(const Base256 &a, const std::uint64_t &pow) ;
+
 
     void print() const {
-        std::uint64_t value = 0;
-        // Vector stores data natively as little-endian, iterate using reverse iterator
-        for (auto it = data.rbegin(); it != data.rend(); ++it) {
-            value = (value << 8) | static_cast<std::uint64_t>(*it);
+        // Make a copy because we will modify it
+        ByteArray temp = data;
+
+        // Handle zero explicitly
+        if (isZero(temp)) {
+            std::cout << "0" << std::endl;
+            return;
         }
-        std::cout << value << '\n';
+
+        std::string result;
+
+        while (!isZero(temp)) {
+            std::uint16_t remainder = 0;
+
+            // Divide temp by 10 (base256 -> base10 conversion step)
+            for (std::int64_t i = static_cast<std::int64_t>(temp.size()) - 1; i >= 0; --i) {
+                const std::uint16_t current = (remainder << 8) | temp[i];
+                temp[i] = static_cast<std::uint8_t>(current / 10);
+                remainder = current % 10;
+            }
+
+            result.push_back(static_cast<char>('0' + remainder));
+        }
+
+        std::ranges::reverse(result);
+        std::cout << result << std::endl;
     }
 
-    void normalizeVector(ByteArray &a) const {
+    static void normalizeVector(ByteArray &a)  {
         while (a.size() > 1 && a.back() == 0) {
             a.pop_back();
         }
