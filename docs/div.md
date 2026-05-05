@@ -1,26 +1,23 @@
 # Division
-
-Because iterative subtraction (e.g., subtracting `3` from `1,000,000` one by one) is computationally disastrous for Big-Integers, the `Base256` class implements **Bitwise Long Division** (Binary Long Division).
-
-This algorithm evaluates the quotient one **bit** at a time, moving from the Most Significant Bit (MSB) down to the Least Significant Bit (LSB).
+This documentation explains how the **Bitwise Long Division** (Binary Long Division) is implemented.
 
 ## Definitions
-To understand the division algorithm, it is important to define the mathematical terms used in the context of the code:
-* **Dividend (`data`):** The number being divided (the total amount you start with).
-* **Divisor (`divisor`):** The number you are dividing by (how large each "group" is).
-* **Quotient (`quotient`):** The primary answer. How many times the divisor fits entirely into the dividend.
+* **Dividend (`data`):** The number being divided
+* **Divisor (`divisor`):** The number you are dividing by
+* **Quotient (`quotient`):** This is the result number. How many times the divisor fits entirely into the dividend.
 * **Remainder / Modulo (`remaining`):** The leftover amount that is strictly less than the divisor.
 * **Dividend Mask (`dividendMask`):** The active "working remainder" used dynamically within the long division loop to evaluate the current subset of bits.
 
 ## The Basic Concept
-Binary Long Division works exactly like the long division taught in elementary school, but it is vastly simpler because the quotient at any step can only ever be `1` or `0` (it either fits, or it doesn't).
+Binary Long Division works exactly like the long division taught in elementary school, but it is simpler because the quotient at any step can only ever be `1` or `0` (it either fits, or it doesn't).
 1. Isolate the highest piece of the dividend.
 2. Check if the divisor fits into it.
 3. If it fits, write `1` to the quotient, subtract the divisor, and "bring down" the next bit.
 4. If it doesn't fit, write `0` to the quotient, don't subtract, and "bring down" the next bit.
 
-**Quick Binary Example (`7 / 2`):**
-To see this in action, let's divide `111` (7 in decimal) by `10` (2 in decimal).
+**Quick Binary Example `7 / 2`:**
+- `111` (7 in decimal) 
+- `10` (2 in decimal)
 
 **The Setup:**
 ```text
@@ -67,14 +64,13 @@ Divisor: 10 | 1   1   1  <-- Dividend
 ```
 
 **Result:**
-Reading the top from left to right, our built quotient is **`011`** (which evaluates to `3` in decimal). The leftover value at the bottom is our remainder: **`1`**.
+Reading the top from left to right, our built quotient is **`011`** (`3` in decimal). The leftover value at the bottom is our remainder: **`1`**.
 *(7 / 2 = 3 R 1)*.
 
 ## 1. Edge Cases and Initialization
-Before any loops begin, the algorithm secures the mathematical boundaries:
 1. **Division by Zero:** If the divisor is `0`, the operation safely aborts, defaulting the quotient and remainder to `0`.
 2. **Finding the MSB (`getStartBitIndex`):** The algorithm scans the dividend to find the exact global index of the highest `1` bit (`initialDividendIndex`). This prevents the algorithm from processing leading mathematical "ghost zeros."
-3. **Preallocation:** Because the exact bit-length of the quotient correlates directly to the `initialDividendIndex`, the `quotient` vector is pre-allocated to its exact maximum required size (`(initialDividendIndex / 8) + 1`). This completely eliminates memory reallocation overhead during the division loop.
+3. **Preallocation:** Because the exact bit-length of the quotient correlates directly to the `initialDividendIndex`, the `quotient` vector is pre-allocated to its exact maximum required size (`(initialDividendIndex / 8) + 1`).
 
 ## 2. The Working Remainder (`dividendMask`)
 The algorithm initializes the `dividendMask` by taking a value of `0`, shifting it left by 1, and "bringing down" the absolute highest bit from the dividend.
