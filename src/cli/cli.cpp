@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "core/key.h"
+#include "../core/key.h"
 
 void cli::help() { std::cout << "Welcome to RSA-Encryptor" << std::endl; }
 

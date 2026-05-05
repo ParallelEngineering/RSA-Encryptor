@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vector>
 
-#include "cli.h"
+#include "cli/cli.h"
 #include "core/key.h"
 
 int main(int argc, char *argv[]) {
