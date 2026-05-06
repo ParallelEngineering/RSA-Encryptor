@@ -26,8 +26,7 @@ class Base256 {
 
     void div(const ByteArray &divisor, ByteArray *remaining = nullptr) noexcept;
 
-    static Base256 pow(const Base256 &a, const std::uint64_t &pow) ;
-
+    static Base256 pow(const Base256 &a, const std::uint64_t &pow);
 
     void print() const {
         // Make a copy because we will modify it
@@ -58,7 +57,7 @@ class Base256 {
         std::cout << result << std::endl;
     }
 
-    static void normalizeVector(ByteArray &a)  {
+    static void normalizeVector(ByteArray &a) {
         while (a.size() > 1 && a.back() == 0) {
             a.pop_back();
         }
