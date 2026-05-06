@@ -131,41 +131,47 @@ void operations::Base256::mul(const ByteArray &b) noexcept {
 
 void operations::Base256::div(const ByteArray &divisor, ByteArray *remaining) noexcept {
     const std::int64_t initialDividendIndex = getStartBitIndex(data);
-
     if (isZero(divisor) || initialDividendIndex == INVALID_START_BIT_INDEX) {
         if (remaining != nullptr) *remaining = {0};
         data = {0};
         return;
     }
 
-    // Pre-allocate quotient based on the bit length of the dividend
+    // Pre allocate vector
     ByteArray quotient((initialDividendIndex / 8) + 1, 0);
-    ByteArray dividendMask = {0};
 
-    for (std::int64_t i = initialDividendIndex; i >= 0; --i) {
-        // "Bring down" the next bit from the dividend into our working mask
-        dividendMask = addBitFromNumber(dividendMask, data, i);
+    std::int64_t dividendIndex = initialDividendIndex;
+    ByteArray dividendMask = addBitFromNumber({0}, data, dividendIndex--);
 
-        // Check if the divisor fits into the current working mask
+    while (dividendIndex >= -1) {
+        std::int64_t currentQBitIndex = dividendIndex + 1;
+
         if (isEqual(dividendMask, divisor) || isBigger(dividendMask, divisor)) {
+            // Drop evaluating bit immediately at explicitly targeted position inside quotient
+            quotient[currentQBitIndex / 8] |= (1 << (currentQBitIndex % 8));
 
-            // Set the corresponding bit in the quotient
-            quotient[i / 8] |= (1 << (i % 8));
+            if (dividendIndex < 0) {
+                if (remaining != nullptr) *remaining = sub(dividendMask, divisor);
+                break;
+            }
 
-            // Subtract the divisor from the working mask
             dividendMask = sub(dividendMask, divisor);
+            dividendMask = addBitFromNumber(dividendMask, data, dividendIndex);
+            dividendIndex--;
+        } else {
+            if (dividendIndex < 0) {
+                if (remaining != nullptr) *remaining = dividendMask;
+                break;
+            }
+
+            dividendMask = addBitFromNumber(dividendMask, data, dividendIndex);
+            dividendIndex--;
         }
     }
 
-    // Whatever is left in the mask after processing all bits is the remainder
-    if (remaining != nullptr) {
-        *remaining = std::move(dividendMask);
-        normalizeVector(*remaining);
-        if (remaining->empty()) remaining->push_back(0);
-    }
-
-    // 6. Finalize the Quotient
+    // Strip trailing normalization zeros (empty space buffers) securely
     normalizeVector(quotient);
+
     if (quotient.empty()) quotient.push_back(0);
 
     data = std::move(quotient);

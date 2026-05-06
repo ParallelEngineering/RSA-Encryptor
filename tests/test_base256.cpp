@@ -219,9 +219,7 @@ TEST_CASE("Base256: division by zero (edge cases)") {
         REQUIRE(make(MAX_U64) / make(0) == make(0));
     }
 
-    SECTION("Dividing zero by zero yields zero") {
-        REQUIRE(make(0) / make(0) == make(0));
-    }
+    SECTION("Dividing zero by zero yields zero") { REQUIRE(make(0) / make(0) == make(0)); }
 }
 
 // TODO
