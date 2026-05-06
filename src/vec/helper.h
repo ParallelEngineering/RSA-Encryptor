@@ -7,6 +7,7 @@
 
 #include "types.h"
 
+// This function returns the index of the most significant bit
 [[nodiscard]] inline std::int64_t getStartBitIndex(const ByteArray &a) {
     // Handle the absolute zero edge-case
     if (a.empty() || (a.size() == 1 && a[0] == 0)) {

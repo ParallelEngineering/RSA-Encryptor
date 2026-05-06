@@ -23,12 +23,28 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: true
 
-      - name: Setup Ninja
-        uses: ashutoshvarma/setup-ninja@master
+      - name: Install Ninja (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build
+
+      - name: Install Ninja (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          if ! command -v ninja >/dev/null 2>&1; then
+            brew install ninja
+          fi
+
+
+      - name: Install Ninja (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: choco install ninja -y
 
       - name: Configure CMake
         run: |
@@ -52,7 +68,7 @@ jobs:
 
       - name: Upload Artifacts for Release
         if: matrix.build-configuration == 'Release'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.config.os }}-build
           path: ${{ matrix.config.os }}-build.zip
@@ -70,10 +86,10 @@ jobs:
       contents: write 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Download all OS Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: ./release-artifacts
           merge-multiple: true # Puts the Mac, Win, and Linux zip files in the same folder
@@ -83,9 +99,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Create naming convention
-          DATE=$(date +'%Y%m%d')
+          DATE=$(date +'%d_%m_%Y')
           SHORT_SHA=${GITHUB_SHA::8}
-          TAG_NAME="dev-${DATE}-${SHORT_SHA}"
+          TAG_NAME="dev-${SHORT_SHA}-${DATE}"
           
           # Create Pre-Release and attach all downloaded .zip files using modern GitHub CLI
           gh release create "$TAG_NAME" ./release-artifacts/*.zip \
