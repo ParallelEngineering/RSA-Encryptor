@@ -36,10 +36,10 @@ The class enforces strict **Array Normalization**. After every operation, traili
 
 ## Algorithmic Mechanics
 
-- [Addition](add.md#addition)
-- [Subtraction](sub.md#subtraction)
-- [Subtraction](mul.md#multiplication)
-- [Subtraction](div.md#division)
+- [Addition](algorithms/add.md#addition)
+- [Subtraction](algorithms/sub.md#subtraction)
+- [Subtraction](algorithms/mul.md#multiplication)
+- [Subtraction](algorithms/div.md#division)
 ---
 
 ## Code Examples & Usage
