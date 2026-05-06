@@ -282,7 +282,7 @@ TEST_CASE("Base256: comparisons edge cases") {
 
 TEST_CASE("Base256: print outputs base10 string to cout") {
     // Helper lambda to capture std::cout output safely
-    auto capturePrint =[](const Base256 &num) {
+    auto capturePrint = [](const Base256 &num) {
         std::stringstream buffer;
         // Redirect std::cout to our buffer
         std::streambuf *oldCout = std::cout.rdbuf(buffer.rdbuf());
@@ -292,9 +292,7 @@ TEST_CASE("Base256: print outputs base10 string to cout") {
         return buffer.str();
     };
 
-    SECTION("Absolute zero") {
-        REQUIRE(capturePrint(make(0)) == "0\n");
-    }
+    SECTION("Absolute zero") { REQUIRE(capturePrint(make(0)) == "0\n"); }
 
     SECTION("Single digit / small numbers") {
         REQUIRE(capturePrint(make(7)) == "7\n");
