@@ -16,8 +16,8 @@ Binary Long Division works exactly like the long division taught in elementary s
 4. If it doesn't fit, write `0` to the quotient, don't subtract, and "bring down" the next bit.
 
 **Quick Binary Example `7 / 2`:**
-- `111` (7 in decimal) 
-- `10` (2 in decimal)
+- `7` (`111`)
+- `2` (`10`)
 
 **The Setup:**
 ```text
@@ -64,19 +64,22 @@ Divisor: 10 | 1   1   1  <-- Dividend
 ```
 
 **Result:**
-Reading the top from left to right, our built quotient is **`011`** (`3` in decimal). The leftover value at the bottom is our remainder: **`1`**.
+The quotient is `001` (`3` in decimal). The leftover value at the bottom is our remainder: **`1`**.
 *(7 / 2 = 3 R 1)*.
 
-## 1. Edge Cases and Initialization
-1. **Division by Zero:** If the divisor is `0`, the operation safely aborts, defaulting the quotient and remainder to `0`.
-2. **Finding the MSB (`getStartBitIndex`):** The algorithm scans the dividend to find the exact global index of the highest `1` bit (`initialDividendIndex`). This prevents the algorithm from processing leading mathematical "ghost zeros."
-3. **Preallocation:** Because the exact bit-length of the quotient correlates directly to the `initialDividendIndex`, the `quotient` vector is pre-allocated to its exact maximum required size (`(initialDividendIndex / 8) + 1`).
 
-## 2. The Working Remainder (`dividendMask`)
-The algorithm initializes the `dividendMask` by taking a value of `0`, shifting it left by 1, and "bringing down" the absolute highest bit from the dividend.
+## Implementation
+The division algorithm is implement within 5 steps.
+### 1. Initialization
+1. **Division by Zero:** If the divisor is `0`, we abort and default the quotient and remainder to `0`.
+2. **Finding the MSB** Using the `getStartBitIndex` function we get the MSB and assign it to `initialDividendIndex`. This ensures that we don't process any ghost zeros because the highest byte could look something like this `00010001`.
+3. **Preallocation:** Because the exact bit-length of the quotient correlates directly to the `initialDividendIndex`, the `quotient` vector is pre-allocated to the maximum required size (`(initialDividendIndex / 8) + 1`).
 
-## 3. The Bitwise Evaluation Loop
-The algorithm enters a `while` loop, processing bit by bit from `initialDividendIndex` down to `-1`.
+### 2. Working Remainder (`dividendMask`)
+`dividendMask` is initialized by taking a value of `0`, shifting it left by 1, and "bringing down" the absolute highest bit from the **dividend**.
+
+### 3. Bitwise Evaluation Loop
+In a `while` loop, bit by bit is processed from `initialDividendIndex` down to `-1`.
 For every bit position, the mathematical power index (`currentQBitIndex`) is evaluated.
 
 At each step we check if the `dividendMask` (working remainder) is $\ge$ the `divisor`.
@@ -92,21 +95,20 @@ At each step we check if the `dividendMask` (working remainder) is $\ge$ the `di
 * No subtraction occurs.
 * The `dividendMask` is simply shifted left by 1, and the *next* bit from the dividend is brought down to increase the value of the mask for the next loop iteration.
 
-## 4. Modulo (The Remainder)
+### 4. Modulo (The Remainder)
 Because this is integer division, there is often a fractional remainder. The `div` function accepts an optional pointer to a `remaining` vector (`Bytes* remaining`).
 When the loop finishes processing the final bit (`dividendIndex < 0`), whatever mathematical value is left inside the `dividendMask` is exactly the modulo. If the pointer is provided, the mask is copied into it.
 
 *(Note: Because of this architecture, evaluating `A % B` requires the exact same computational effort as `A / B`. Therefore, if both the quotient and remainder are needed, they are extracted simultaneously to halve CPU cycles).*
 
-## 5. Final Normalization
+### 5. Final Normalization
 Even though pre-allocation is tightly bound to the `initialDividendIndex`, the final quotient might have leading zeros depending on the magnitude of the divisor. The `div` function concludes by stripping any trailing zero-bytes from the little-endian vector to maintain strict `Base256` normalization guarantees.
 
 ---
 
-## Visualization: `13 / 3` (Binary Long Division)
-To understand how the bitwise loop processes numbers, let's trace the division of `13` by `3`.
-* **Dividend:** `13` $\rightarrow$ Binary: `1101`
-* **Divisor:** `3` $\rightarrow$ Binary: `0011`
+## Visualization: `13 / 3`
+* **Dividend:** `13` (`1101`)
+* **Divisor:** `3` (`0011`)
 
 **Initialization:**
 * `getStartBitIndex(1101)` returns `3` (the 0-based index of the highest `1` bit).

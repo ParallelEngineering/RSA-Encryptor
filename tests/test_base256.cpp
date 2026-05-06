@@ -212,6 +212,51 @@ TEST_CASE("Base256: division & compound division") {
     }
 }
 
+TEST_CASE("Base256: division by zero (edge cases)") {
+    // Tests the left side of your OR statement: `isZero(divisor)`
+    SECTION("Dividing a normal number by zero yields zero") {
+        REQUIRE(make(42) / make(0) == make(0));
+        REQUIRE(make(MAX_U64) / make(0) == make(0));
+    }
+
+    SECTION("Dividing zero by zero yields zero") {
+        REQUIRE(make(0) / make(0) == make(0));
+    }
+}
+
+// TODO
+TEST_CASE("Base256: remainder / modulo logic") {
+    // Assuming you have implemented operator% (e.g., a % b)
+    // If not, adapt this to test your exposed remainder API or `div()` method
+
+    /*
+    SECTION("Remainder of zero dividend yields zero") {
+        // Tests the interior block: `if (remaining != nullptr) *remaining = {0};`
+        // when `initialDividendIndex < 0`
+        REQUIRE(make(0) % make(123456) == make(0));
+    }
+
+
+    SECTION("Remainder of division by zero yields zero") {
+        // Tests the interior block: `if (remaining != nullptr) *remaining = {0};`
+        // when `isZero(divisor)`
+        REQUIRE(make(123456) % make(0) == make(0));
+    }
+
+    SECTION("Normal fractional remainders") {
+        // Validates standard operation of the `remaining` pointer during `div`
+        REQUIRE(make(10) % make(3) == make(1));
+        REQUIRE(make(255) % make(2) == make(1));
+        REQUIRE(make(1000) % make(333) == make(1));
+    }
+
+    SECTION("Dividend smaller than divisor yields the dividend as remainder") {
+        REQUIRE(make(10) % make(20) == make(10));
+        REQUIRE(make(1) % make(MAX_U64) == make(1));
+    }
+    */
+}
+
 TEST_CASE("Base256: mixed expressions & combinations") {
     SECTION("(a + b) * c then divide back by c (c > 0)") {
         for (uint64_t a = 1; a <= 20; ++a)

@@ -10,12 +10,12 @@
 [[nodiscard]] inline std::int64_t getStartBitIndex(const ByteArray &a) {
     // Handle the absolute zero edge-case
     if (a.empty() || (a.size() == 1 && a[0] == 0)) {
-        return -1;
+        return INVALID_START_BIT_INDEX;
     }
 
     // Because of normalization, the highest bit is guaranteed
     // to be in the very last byte of the vector.
-    const std::int64_t highestByteIndex = a.size() - 1;
+    const auto highestByteIndex = static_cast<std::int64_t>(a.size() - 1);
     const std::uint8_t highestByte = a.back();
 
     // Find the highest bit in just this one byte (max 8 iterations)
