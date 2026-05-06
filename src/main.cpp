@@ -4,12 +4,10 @@
 #include <iostream>
 #include <vector>
 
-#include "cli.h"
-#include "key.h"
-#include "utility.h"
-#include "vec/operations.h"
+#include "cli/cli.h"
+#include "core/key.h"
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     struct {
         bool privateKey = false;
         bool publicKey = false;
@@ -42,7 +40,6 @@ int main(int argc, char* argv[]) {
             } else if (subFeature == "print" && argv[3] != nullptr) {
                 cli::keyManager::print(argv[3], arguments.publicKey, arguments.privateKey);
             }
-
         } else if (feature == "help") {
             cli::help();
         } else {
