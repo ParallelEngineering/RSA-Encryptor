@@ -115,6 +115,19 @@ class Base256 {
         return *this;
     }
 
+    friend Base256 operator%(const Base256 &rhs, const Base256 &lhs) {
+        Base256 result(rhs);
+        result %= lhs;
+        return result;
+    }
+
+    Base256 &operator%=(const Base256 &rhs) {
+        Base256 remaining;
+        this->div(rhs.data, &remaining.data);
+        this->data = std::move(remaining.data);
+        return *this;
+    }
+
     [[nodiscard]] friend bool operator==(const Base256 &lhs, const Base256 &rhs) {
         return isEqual(lhs.data, rhs.data);
     }

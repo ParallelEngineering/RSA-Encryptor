@@ -222,18 +222,15 @@ TEST_CASE("Base256: division by zero (edge cases)") {
     SECTION("Dividing zero by zero yields zero") { REQUIRE(make(0) / make(0) == make(0)); }
 }
 
-// TODO
 TEST_CASE("Base256: remainder / modulo logic") {
     // Assuming you have implemented operator% (e.g., a % b)
     // If not, adapt this to test your exposed remainder API or `div()` method
 
-    /*
     SECTION("Remainder of zero dividend yields zero") {
         // Tests the interior block: `if (remaining != nullptr) *remaining = {0};`
         // when `initialDividendIndex < 0`
         REQUIRE(make(0) % make(123456) == make(0));
     }
-
 
     SECTION("Remainder of division by zero yields zero") {
         // Tests the interior block: `if (remaining != nullptr) *remaining = {0};`
@@ -252,7 +249,6 @@ TEST_CASE("Base256: remainder / modulo logic") {
         REQUIRE(make(10) % make(20) == make(10));
         REQUIRE(make(1) % make(MAX_U64) == make(1));
     }
-    */
 }
 
 TEST_CASE("Base256: mixed expressions & combinations") {
