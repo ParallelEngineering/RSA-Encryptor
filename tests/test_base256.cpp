@@ -232,7 +232,6 @@ TEST_CASE("Base256: remainder / modulo logic") {
         REQUIRE(make(0) % make(123456) == make(0));
     }
 
-
     SECTION("Remainder of division by zero yields zero") {
         // Tests the interior block: `if (remaining != nullptr) *remaining = {0};`
         // when `isZero(divisor)`
