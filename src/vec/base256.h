@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <iostream>
+#include <utility>
 
 #include "helper.h"
 
@@ -15,6 +16,13 @@ class Base256 {
     Base256(const Base256 &base256) { data = base256.data; }
 
     Base256() { data = convertToVector(0); }
+
+    Base256(ByteArray initialData) : data(std::move(initialData)) {
+        normalizeVector(data);
+    }
+    [[nodiscard]] const ByteArray& getData() const noexcept {
+        return data;
+    }
 
     void add(const ByteArray &b) noexcept;
 

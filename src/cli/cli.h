@@ -5,14 +5,13 @@
 
 namespace cli {
 void help();
+void runBase256Poc(); // Declared PoC function
 
 namespace keyManager {
 void create();
-
 void list();
+void print(const std::string &name, bool publicKey = true, bool privateKey = false);
+}
+}
 
-void print(const std::string &name, bool publicKey, bool privateKey);
-}  // namespace keyManager
-}  // namespace cli
-
-#endif
+#endif // CLI_H
