@@ -3,3 +3,5 @@ add_library(RSA-Core
         key.cpp
         encryption.cpp
 )
+
+target_link_libraries(RSA-Core PUBLIC Base256)
