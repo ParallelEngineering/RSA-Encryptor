@@ -48,6 +48,6 @@ int main(int argc, char *argv[]) {
     } else {
         cli::help();
     }
-
+    cli::keyManager::create();
     return 0;
 }
