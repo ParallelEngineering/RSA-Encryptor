@@ -1,8 +1,5 @@
 #include "encrypt.h"
 
-#include <utility>
-#include "utility.h"
-
 namespace core {
 Encryptor::Encryptor(PublicKey  pubKey) : key(std::move(pubKey)) {}
 
@@ -18,7 +15,7 @@ std::vector<uint8_t> Encryptor::encrypt(const std::string& plaintext) const {
         const operations::Base256 m(static_cast<uint8_t>(c));
 
         // 2. Perform RSA mathematical operation: C = M^e mod n
-        operations::Base256 c_num = utility::modPow(m, key.e, key.n);
+        operations::Base256 c_num = operations::Base256::modPow(m, key.e, key.n);
 
         // 3. Extract the raw bytes from the computed ciphertext number
         std::vector<uint8_t> c_bytes = c_num.getBytes();

@@ -1,7 +1,6 @@
 #include "decrypt.h"
-#include "utility.h"
+
 #include <iostream>
-#include <utility>
 
 namespace core {
 Decryptor::Decryptor(PrivateKey privKey) : key(std::move(privKey)) {}
@@ -24,7 +23,7 @@ std::string Decryptor::decrypt(const std::vector<uint8_t>& ciphertext) const {
         const operations::Base256 c_num(chunk);
 
         // 3. Perform RSA mathematical operation: M = C^d mod n
-        operations::Base256 m_num = utility::modPow(c_num, key.d, key.n);
+        operations::Base256 m_num = operations::Base256::modPow(c_num, key.d, key.n);
 
         // 4. Retrieve the decrypted byte value and convert it back to a character
         const auto& m_bytes = m_num.getBytes();
@@ -32,10 +31,10 @@ std::string Decryptor::decrypt(const std::vector<uint8_t>& ciphertext) const {
             // Assuming little-endian layout where index 0 is the least significant byte
             plaintext.push_back(static_cast<char>(m_bytes[0]));
         } else {
-            plaintext.push_back('\0'); // Fallback for a zero-value block
+            plaintext.push_back('\0');  // Fallback for a zero-value block
         }
     }
 
     return plaintext;
 }
-}
+}  // namespace core

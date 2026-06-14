@@ -1,9 +1,9 @@
-add_library(RSA-CLI
+add_library(RSA-IO
         cli.cpp
         helper.cpp
 )
 
-target_link_libraries(RSA-CLI
+target_link_libraries(RSA-IO
         PRIVATE
         RSA-Core
 )
