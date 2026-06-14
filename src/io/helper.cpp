@@ -81,19 +81,3 @@ int helper::readKey(const std::string &name, std::vector<uint8_t> &data, bool is
     data = keyPair::base64Decode(keyString);
     return 1;
 }
-
-bool helper::getPrivateKey(const std::string &name, keyPair::PrivateKey &outKey) {
-    std::vector<uint8_t> rawData;
-    if (readKey(name, rawData, false) != 1) {
-        return false;
-    }
-    return keyPair::s_deserialize(rawData, outKey.n, outKey.d);
-}
-
-bool helper::getPublicKey(const std::string &name, keyPair::PublicKey &outKey) {
-    std::vector<uint8_t> rawData;
-    if (readKey(name, rawData, true) != 1) {
-        return false;
-    }
-    return keyPair::s_deserialize(rawData, outKey.n, outKey.e);
-}

@@ -13,9 +13,6 @@ namespace helper {
 
     int writeKey(const std::string &name, const std::vector<uint8_t> &data, bool isPublic);
     int readKey(const std::string &name, std::vector<uint8_t> &data, bool isPublic);
-
-    bool getPrivateKey(const std::string &name, keyPair::PrivateKey &outKey);
-    bool getPublicKey(const std::string &name, keyPair::PublicKey &outKey);
 };
 
 

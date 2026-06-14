@@ -42,12 +42,11 @@ private:
     PublicKey public_key;
     PrivateKey private_key;
 
-public:
     static std::vector<uint8_t> s_serialize(const operations::Base256 &first,
                                             const operations::Base256 &second);
     static bool s_deserialize(const std::vector<uint8_t> &data, operations::Base256 &outFirst,
                               operations::Base256 &outSecond);
-
+public:
     keyPair() {
         // Currently using dummy values
         public_key.n = operations::Base256(937131);
