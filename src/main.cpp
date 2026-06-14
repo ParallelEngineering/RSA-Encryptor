@@ -4,8 +4,8 @@
 #include <iostream>
 #include <vector>
 
-#include "cli/cli.h"
 #include "core/key.h"
+#include "io/cli.h"
 
 int main(int argc, char *argv[]) {
     struct {

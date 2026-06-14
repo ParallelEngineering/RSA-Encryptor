@@ -1,5 +1,6 @@
 add_library(RSA-CLI
-    cli.cpp
+        cli.cpp
+        helper.cpp
 )
 
 target_link_libraries(RSA-CLI
