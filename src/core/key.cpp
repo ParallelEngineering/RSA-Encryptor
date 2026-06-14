@@ -29,59 +29,6 @@ int key::keyExists(const std::string& name) {
     return status;
 }
 
-// Serializes two 4 bytes Byte Arrays with Big endian
-std::vector<uint8_t> key::serializeKey(const operations::Base256 &first, const operations::Base256 &second) {
-    std::vector<uint8_t> serialized;
-    const auto &firstBytes = first.getBytes();
-    const auto &secondBytes = second.getBytes();
-
-    uint32_t firstSize = firstBytes.size();
-    uint32_t secondSize = secondBytes.size();
-
-    serialized.push_back((firstSize >> 24) & 0xFF);
-    serialized.push_back((firstSize >> 16) & 0xFF);
-    serialized.push_back((firstSize >> 8) & 0xFF);
-    serialized.push_back(firstSize & 0xFF);
-
-    serialized.insert(serialized.end(), firstBytes.begin(), firstBytes.end());
-
-    serialized.push_back((secondSize >> 24) & 0xFF);
-    serialized.push_back((secondSize >> 16) & 0xFF);
-    serialized.push_back((secondSize >> 8) & 0xFF);
-    serialized.push_back(secondSize & 0xFF);
-
-    serialized.insert(serialized.end(), secondBytes.begin(), secondBytes.end());
-
-    return serialized;
-}
-
-// Deserializes two 4 bytes Byte Arrays with Big endian
-bool key::deserializeKey(const std::vector<uint8_t> &data, operations::Base256 &outFirst, operations::Base256 &outSecond) {
-    if (data.size() < 8) return false;
-
-    size_t index = 0;
-
-    uint32_t firstSize = (data[index] << 24) | (data[index + 1] << 16) | (data[index + 2] << 8) | data[index + 3];
-    index += 4;
-
-    if (index + firstSize > data.size()) return false;
-    std::vector firstBytes(data.begin() + index, data.begin() + index + firstSize);
-    index += firstSize;
-
-    if (index + 4 > data.size()) return false;
-
-    const uint32_t secondSize = (data[index] << 24) | (data[index + 1] << 16) | (data[index + 2] << 8) | data[index + 3];
-    index += 4;
-
-    if (index + secondSize > data.size()) return false;
-    std::vector secondBytes(data.begin() + index, data.begin() + index + secondSize);
-
-    outFirst = operations::Base256(firstBytes);
-    outSecond = operations::Base256(secondBytes);
-
-    return true;
-}
-
 int key::writeKey(const std::string &name, const std::vector<uint8_t> &data, const bool isPublic) {
     std::filesystem::path keysFolder = keysPath();
     std::filesystem::path keyFile = keysFolder / (name + (isPublic ? ".pub" : ""));
@@ -223,8 +170,8 @@ void key::createRSAKey() {
     PrivateKey priv;
     createKeyPair(pub, priv);
 
-    std::vector<uint8_t> serializedPub = serializeKey(pub.n, pub.e);
-    std::vector<uint8_t> serializedPriv = serializeKey(priv.n, priv.d);
+    ByteArray serializedPub = pub.serialize(pub.n, pub.e);
+    ByteArray serializedPriv = priv.serialize(priv.n, priv.d);
 
     if (writeKey(keyName, serializedPub, true) == 1 && writeKey(keyName, serializedPriv, false) == 1) {
         std::cout << keyName + "-Key created succesfully!\n";
@@ -239,7 +186,7 @@ bool key::getPrivateKey(const std::string &name, PrivateKey &outKey) {
     if (readKey(name, rawData, false) != 1) {
         return false;
     }
-    return deserializeKey(rawData, outKey.n, outKey.d);
+    return outKey.deserialize(rawData, outKey.n, outKey.d);
 }
 
 bool key::getPublicKey(const std::string &name, PublicKey &outKey) {
@@ -247,5 +194,5 @@ bool key::getPublicKey(const std::string &name, PublicKey &outKey) {
     if (readKey(name, rawData, true) != 1) {
         return false;
     }
-    return deserializeKey(rawData, outKey.n, outKey.e);
+    return outKey.deserialize(rawData, outKey.n, outKey.e);
 }
