@@ -1,32 +1,23 @@
 #include "utility.h"
 
-int utility::gcd(int a, int b) {
-    if (a == 0) {
-        return b;
-    }
-    return gcd(b % a, a);
-}
 
-int utility::phi(int a, int b) { return ((a - 1) * (b - 1)); }
+namespace core::utility {
+operations::Base256 modPow(operations::Base256 base, operations::Base256 exponent,
+                           const operations::Base256& modulus) {
+    operations::Base256 result(1);
+    base %= modulus;
 
-bool utility::checkForPrime(int number) {
-    int counter = 0;
-    if (number <= 1) {
-        return false;
-    } else {
-        // Check how many numbers divide n in
-        // Range 2 to sqrt(n)
-        for (int i = 2; i * i <= number; i++) {
-            if (number % i == 0) {
-                counter++;
-            }
+    operations::Base256 zero(0);
+    operations::Base256 one(1);
+    operations::Base256 two(2);
+
+    while (exponent > zero) {
+        if (exponent % two == one) {
+            result = (result * base) % modulus;
         }
-
-        // If counter is greater than 0 then n is prime
-        if (counter > 0) {
-            return false;
-        } else {
-            return true;
-        }
+        base = (base * base) % modulus;
+        exponent /= two;
     }
+    return result;
 }
+} // namespace core::utility
