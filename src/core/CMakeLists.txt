@@ -1,5 +1,5 @@
 add_library(RSA-Core
-        key.cpp
+        keyPair.cpp
         encrypt.cpp
         decrypt.h
         decrypt.cpp

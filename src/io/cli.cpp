@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "../core/key.h"
+#include "../core/keyPair.h"
 #include "helper.h"
 
 void cli::help() { std::cout << "Welcome to RSA-Encryptor" << std::endl; }
@@ -23,12 +23,10 @@ void cli::keyManager::create() {
         return;
     }
 
-    PublicKey pub;
-    PrivateKey priv;
-    key::createKeyPair(pub, priv);
+    keyPair newKeyPair{};
 
-    ByteArray serializedPub = pub.serialize(pub.n, pub.e);
-    ByteArray serializedPriv = priv.serialize(priv.n, priv.d);
+    ByteArray serializedPub = newKeyPair.getPublicKey().serialize();
+    ByteArray serializedPriv = newKeyPair.getPrivateKey().serialize();
 
     if (helper::writeKey(keyName, serializedPub, true) == 1 &&
         helper::writeKey(keyName, serializedPriv, false) == 1) {

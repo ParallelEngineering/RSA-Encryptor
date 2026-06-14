@@ -36,7 +36,7 @@ int helper::writeKey(const std::string &name, const std::vector<uint8_t> &data, 
     std::filesystem::path keyFile = keysFolder / (name + (isPublic ? ".pub" : ""));
     std::ofstream outFile(keyFile);
 
-    std::string base64Data = key::base64Encode(data);
+    std::string base64Data = keyPair::base64Encode(data);
 
     if (outFile.is_open()) {
         outFile << "-----BEGIN RSA " << (isPublic ? "PUBLIC" : "PRIVATE") << " KEY-----\n";
@@ -78,22 +78,22 @@ int helper::readKey(const std::string &name, std::vector<uint8_t> &data, bool is
         }
     }
 
-    data = key::base64Decode(keyString);
+    data = keyPair::base64Decode(keyString);
     return 1;
 }
 
-bool helper::getPrivateKey(const std::string &name, PrivateKey &outKey) {
+bool helper::getPrivateKey(const std::string &name, keyPair::PrivateKey &outKey) {
     std::vector<uint8_t> rawData;
     if (readKey(name, rawData, false) != 1) {
         return false;
     }
-    return outKey.deserialize(rawData, outKey.n, outKey.d);
+    return keyPair::s_deserialize(rawData, outKey.n, outKey.d);
 }
 
-bool helper::getPublicKey(const std::string &name, PublicKey &outKey) {
+bool helper::getPublicKey(const std::string &name, keyPair::PublicKey &outKey) {
     std::vector<uint8_t> rawData;
     if (readKey(name, rawData, true) != 1) {
         return false;
     }
-    return outKey.deserialize(rawData, outKey.n, outKey.e);
+    return keyPair::s_deserialize(rawData, outKey.n, outKey.e);
 }
