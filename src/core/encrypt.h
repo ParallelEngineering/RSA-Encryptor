@@ -15,7 +15,7 @@ public:
     explicit Encryptor(PublicKey  pubKey);
 
     // Performs RSA encryption on a plaintext string
-    std::vector<uint8_t> encrypt(const std::string& plaintext) const;
+    [[nodiscard]] std::vector<uint8_t> encrypt(const std::string& plaintext) const;
 };
 }
 
