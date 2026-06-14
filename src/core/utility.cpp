@@ -2,6 +2,7 @@
 
 
 namespace core::utility {
+// TODO move this to base 256 library
 operations::Base256 modPow(operations::Base256 base, operations::Base256 exponent,
                            const operations::Base256& modulus) {
     operations::Base256 result(1);
